@@ -6,13 +6,15 @@ class Sensor():
         self.SineWave = []
         self.CosineWave = []
 
+    #The "given" is whatever angle you want the wave to stop at
     def sine(self, given):
         for angle in range(given):
             #Gets the Sine Wave leading up to a certain angle
             x = (math.sin(math.radians(angle)))
             self.SineWave.append(x)
         return self.SineWave
-
+    
+    #The "given" is whatever angle you want the wave to stop at
     def cosine(self, given):
         for angle in range(given):
             #Gets the cosine wave leading up to a certain angle
