@@ -1,6 +1,6 @@
-class Sensor(Snapper):
+class Sensor():
 
-    def __init__(self):
+    def __init__(self, Snapper):
         self.snapper = Snapper
     
     def Publish(self, data):
