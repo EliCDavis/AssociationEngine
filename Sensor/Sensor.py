@@ -4,6 +4,6 @@ class Sensor:
         self.snapper = Snapper()
     
     def Publish(self, data):
-        self.snapper.onData()
+        self.snapper.onData(self, data)
         
 
