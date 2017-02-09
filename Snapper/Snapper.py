@@ -19,12 +19,14 @@ class Snapper():
         :param data:
         :return:
         '''
+        pass
 
     def createSnapshot(self):
         '''
         This function collects all available data and builds the newest snapshot of synchronized values.
         :return:
         '''
+        pass
 
     def forwardSnapshot(self):
         '''
