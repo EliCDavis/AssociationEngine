@@ -1,7 +1,9 @@
 class Snapper:
     def __init__(self):
         self.sensors = []
-        self.snapshot = []
+        self.dataBuffer = {}
+        self.routeMap = {}
+        self.snapshot = {}
         self.startTime = 0.0
         self.variables = []
 
@@ -19,14 +21,15 @@ class Snapper:
         :param data:
         :return:
         """
-        pass
+        self.dataBuffer[sensor.uuid] = data
 
     def create_snapshot(self):
         """
         This function collects all available data and builds the newest snapshot of synchronized values.
         :return:
         """
-        pass
+        for sensor in self.dataBuffer:
+            self.snapshot[self.routeMap[sensor]] = self.dataBuffer[sensor]
 
     def forward_snapshot(self):
         """
