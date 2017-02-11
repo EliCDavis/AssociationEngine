@@ -34,5 +34,4 @@ class Snapper():
         :return:
         '''
         for variable in self.variables:
-            "The next line will need revision to narrow the data sent"
-            variable.onData(snapshot)
+            variable.onData(snapshot[variable.uuid])
