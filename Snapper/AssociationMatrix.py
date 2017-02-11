@@ -1,4 +1,4 @@
-class AssociationMatrix():
+class AssociationMatrix:
 
     def __init__(self):
         """
@@ -8,13 +8,13 @@ class AssociationMatrix():
         """
         self.relationships = []
 
-    def addRelationship(self, relationship):
+    def add_relationship(self, relationship):
         pass
 
-    def removeRelationship(self, relationship):
+    def remove_relationship(self, relationship):
         pass
 
-    def onNewAssociationValue(self, value):
+    def on_new_association_value(self, value):
         pass
 
     def display(self, sensor, value):
