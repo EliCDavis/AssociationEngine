@@ -20,4 +20,3 @@ class Variable:
 
     def remove_subscriber(self, relationship_uuid):
         self.subscribers.pop(relationship_uuid, None)
-
