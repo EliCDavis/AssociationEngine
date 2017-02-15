@@ -1,8 +1,12 @@
 from uuid import uuid4
-from .Variable import Variable
 
 
 class Relationship:
+    """Abstract class to be implemented via different algorithms.
+
+    This class provides programmers the ability to implement their
+    own association algorithm into the system in an easy fashion.
+    """
 
     def __init__(self, sensor_x, sensor_y):
         """
@@ -11,6 +15,9 @@ class Relationship:
         :type sensor_x: Variable
 
         """
+
+        # Create list of subscribers that we'll push too
+        self.subscribers = []
 
         # Assign sensors appropriately
         self.sensor_x = sensor_x
@@ -23,6 +30,9 @@ class Relationship:
         sensor_x.add_subscriber(self)
         sensor_y.add_subscriber(self)
 
+        # Keep up with the last computed association value
+        self.last_pushed_value = None
+
     def get_uuid(self):
         return self.uuid
 
@@ -31,3 +41,17 @@ class Relationship:
 
     def get_correlation_coefficient(self):
         return
+
+    def subscribe(self, subscriber):
+        """Will add the subscriber to internal list for pushing new data
+
+        Assumes all subscribers passed in will have an 'on_data' method
+        that the relationship class can push too.
+        """
+        self.subscribers.append(subscriber)
+
+    def _push_to_subscribers(self, value):
+        for subscriber in range(len(self.subscribers)):
+            self.subscribers[subscriber].on_data(value)
+
+        self.last_pushed_value = value

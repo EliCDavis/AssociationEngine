@@ -1,12 +1,19 @@
+from scipy.stats import spearmanr
 from .Relationship import Relationship
-from.Variable import Variable
+from .Frame import Frame
 
 
 class SpearframeRelationship(Relationship):
+    """Home grown implementation for determining associtations between sensors
+
+    The spearframe algorithm attempts to break up the 2 streams of variables
+    into frames that capture monotonic trends, and then averages out the
+    correlations of those variables.
+    """
 
     def __init__(self, sensor_x, sensor_y):
         """
-
+        A Relationship takes two sensors and subscribes to them for computation
         :type sensor_y: Variable
         :type sensor_x: Variable
         """
@@ -26,9 +33,26 @@ class SpearframeRelationship(Relationship):
         if len(x_vals) != len(y_vals):
             return False
 
+        # This needs to be replaced with spearframe implementation
+        return len(x_vals) >= 10
+
+
     def __generate_frame_from_values(self, x_vals, y_vals):
 
-        return None
+        frame = Frame()
+        frame.add_correlation(len(x_vals), spearmanr(x_vals, y_vals)[0])
+
+        return frame
+
+    def __generate_association(self, frames):
+        return sum(
+            list(
+                map(
+                    lambda x: x.get_total_time() * abs(x.get_final_correlation()),
+                    frames
+                    )
+                )
+            ) / sum(list(map(lambda x: x.get_total_time(), frames)))
 
     def on_new_value(self, value, id_of_var):
         """
@@ -48,4 +72,5 @@ class SpearframeRelationship(Relationship):
 
         # If we've generated
         if self.__should_generate_new_frame(self.current_iteration[self.sensor_x.get_uuid()], self.current_iteration[self.sensor_y.get_uuid()]):
-            self.frames.append(self.__generate_frame_from_values(self.current_iteration[self.sensor_x.get_uuid()],self.current_iteration[self.sensor_y.get_uuid()]))
+            self.frames.append(self.__generate_frame_from_values(self.current_iteration[self.sensor_x.get_uuid()], self.current_iteration[self.sensor_y.get_uuid()]))
+            self._push_to_subscribers(self.__generate_association(self.frames))

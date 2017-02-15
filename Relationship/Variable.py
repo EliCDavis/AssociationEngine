@@ -10,7 +10,7 @@ class Variable:
 
     def on_data(self, snapshot):
         for subscriber in self.subscribers:
-            subscriber.on_new_value(snapshot, self.uuid)
+            self.subscribers[subscriber].on_new_value(snapshot, self.uuid)
 
     def get_uuid(self):
         return self.uuid
