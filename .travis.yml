@@ -17,6 +17,7 @@ before_install:
   
 install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy
-  
+  - python setup.py install
+
 # command to run tests
 script: pytest
