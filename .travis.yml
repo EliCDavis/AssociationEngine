@@ -1,28 +1,35 @@
 sudo: false
 language: python
-python:
-  - "3.4"
+matrix:
+  include:
+    # "Legacy" environments: oldest supported versions, without and with numba
+    - python: "2.7"
+      env: DEPS="numpy=1.8.2 scipy=0.12.0 matplotlib=1.3 pillow==2.1 pandas=0.13.0 scikit-image=0.9 pyyaml pytables" BUILD_DOCS=false
+    - python: "3.5"
+      env: DEPS="numpy scipy matplotlib pillow pandas!=0.18.0 scikit-image pyyaml pytables numba ipython sphinx numpydoc nbconvert"  BUILD_DOCS=true
 
-cache: apt
-addons:
-  apt:
-    packages:
-    - libatlas-dev
-    - libatlas-base-dev
-    - liblapack-dev
-    - gfortran
-before_install:
-  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
-  - conda update --yes --no-deps conda
 install:
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION pip numpy scipy nose
-  - pip install pep8 python-coveralls
-  - pip install .
-script:
-  - THEANO_FLAGS=floatX=float32 nosetests --with-coverage --cover-package=theanets --logging-level=INFO
-
-# command to run tests
-after_success:
+  # See:
+  # https://groups.google.com/a/continuum.io/forum/#!topic/conda/RSFENqovnro
+  # - conda update --yes --no-deps conda
+  # OK, this used to *fix* the build, but now it *breaks* the build.
+  # If you're reading this, good luck out there. I'm not sure what to tell you.
+  - conda update --yes conda
+  - conda config --add channels conda-forge
+  - conda create -n testenv --yes $DEPS pip nose setuptools python=$TRAVIS_PYTHON_VERSION
+  - source activate testenv
+  # for debugging...
+  - echo $PATH
+  - which python
+  - conda info
+  - conda list
+  - python setup.py install
+  
+  before_install:
+  - if [ ${TRAVIS_PYTHON_VERSION:0:1} == "2" ]; then wget http://repo.continuum.io/miniconda/Miniconda-3.5.5-Linux-x86_64.sh -O miniconda.sh; else wget http://repo.continuum.io/miniconda/Miniconda3-3.5.5-Linux-x86_64.sh -O miniconda.sh; fi
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b -p /home/travis/mc
+  - export PATH=/home/travis/mc/bin:$PATH
+  
+  script:
   - pytest
