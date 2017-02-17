@@ -14,7 +14,7 @@ class Snapper:
         """
         pass
 
-    def on_data(self, sensor, data):
+    def onData(self, sensor, data):
         """
         This function receives data from a sensor and stores it for use in snapshot building.
         :param sensor:

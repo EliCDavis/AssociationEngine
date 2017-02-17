@@ -1,13 +1,13 @@
-from .Sensor import Sensor
+from ..Sensor.Sensor import Sensor
 from .Snapper import Snapper
 
 def test_should_have_sensors_field_as_empty_list_on_init():
     snapper = Snapper()
-    assert snapper.sensors is []
+    assert len(snapper.sensors) is 0
 
 def test_should_have_variables_field_as_empty_list_on_init():
     snapper = Snapper()
-    assert snapper.variables is []
+    assert len(snapper.variables) is 0
 
 def test_should_receive_data_from_attached_sensor():
     snapper = Snapper()
