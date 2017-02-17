@@ -6,7 +6,7 @@ class AssociationMatrix:
 
         Note that relationships is a list of lists of relationship objects.
         """
-        self.relationships = []
+        self.relationships = {}
 
     def add_relationship(self, relationship):
         pass
