@@ -37,4 +37,4 @@ class Snapper:
         :return:
         """
         for variable in self.variables:
-            variable.onData(snapshot[variable.uuid])
+            variable.onData(self.snapshot[variable.uuid])
