@@ -15,7 +15,15 @@ def test_should_have_variables_field_as_empty_list_on_init():
 def test_should_receive_data_from_attached_sensor():
     snapper = Snapper()
     sensor = Sensor(snapper)
-    snapper.sensors.append(sensor)  # A little hacked, I know. This is a place-holder
+    snapper.add_sensor(sensor)
     sensor.Publish(2)
 
     assert snapper.dataBuffer[sensor.uuid] is 2
+
+
+def test_should_store_sensor():
+    snapper = Snapper()
+    sensor = Sensor(snapper)
+    snapper.add_sensor(sensor)
+
+    assert isinstance(snapper.sensors[0], Sensor)
