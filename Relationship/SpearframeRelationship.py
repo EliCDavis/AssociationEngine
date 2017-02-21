@@ -36,18 +36,18 @@ class SpearframeRelationship(Relationship):
     def __should_generate_new_frame(self, x_vals, y_vals):
 
         # Make sure their equal in length before going further
-        if len(x_vals) != len(y_vals) and len(x_vals) < 3 or len(y_vals) < 3:
+        if len(x_vals) != len(y_vals) or len(x_vals) < 3:
             return False
 
         # check both x_vals and y_vals for monotonic changes
-        if self.__check_for_monotonic_change(x_vals[-3], x_vals[-2], x_vals[-1]):
+        if check_for_monotonic_change(x_vals[-3], x_vals[-2], x_vals[-1]):
             self.x_mono_list.append(len(x_vals)-2)
 
-        if self.__check_for_monotonic_change(y_vals[-3], y_vals[-2], y_vals[-1]):
+        if check_for_monotonic_change(y_vals[-3], y_vals[-2], y_vals[-1]):
             self.y_mono_list.append(len(y_vals)-2)
 
         # This needs to be replaced with spearframe implementation
-        return self.x_mono_list and self.y_mono_list
+        return len(self.x_mono_list) > 0 and len(self.y_mono_list) > 0
 
     def __generate_frame_from_values(self, x_vals, y_vals):
 
@@ -73,19 +73,6 @@ class SpearframeRelationship(Relationship):
 
         return frame
 
-    def __generate_association(self, frames):
-        return sum(
-            list(
-                map(
-                    lambda x: x.get_total_time() * abs(x.get_final_correlation()),
-                    frames
-                    )
-                )
-            ) / sum(list(map(lambda x: x.get_total_time(), frames)))
-
-    def __check_for_monotonic_change(self, x, y, z):
-        return ((y-x)/abs(y-x)) == ((z-y)/abs(z-y))
-
     def on_new_value(self, value, id_of_var):
         """
         This method is called by the variables it is subscribed to, updating the
@@ -105,4 +92,34 @@ class SpearframeRelationship(Relationship):
         # If we've generated
         if self.__should_generate_new_frame(self.current_iteration[self.sensor_x.get_uuid()], self.current_iteration[self.sensor_y.get_uuid()]):
             self.frames.append(self.__generate_frame_from_values(self.current_iteration[self.sensor_x.get_uuid()], self.current_iteration[self.sensor_y.get_uuid()]))
-            self._push_to_subscribers(self.__generate_association(self.frames))
+            self._push_to_subscribers(generate_association(self.frames))
+
+
+def check_for_monotonic_change(x, y, z):
+    """
+    Determines whether or not a change in direction as x => y => z has occurred.
+    Returns True if a change has occurred
+    :param x:
+    :param y:
+    :param z:
+    :return:
+    """
+    return ((y-x)/abs(y-x)) != ((z-y)/abs(z-y))
+
+
+def generate_association(frames):
+    """
+    Generates a numerical value (0-1) which describes how strongly two variables
+    are associated with one another given a list of non empty Frame objects
+
+    :rtype : float
+    :type frames: list:Frame
+    """
+    return sum(
+        list(
+            map(
+                lambda x: x.get_total_time() * abs(x.get_final_correlation()),
+                frames
+                )
+            )
+        ) / sum(list(map(lambda x: x.get_total_time(), frames)))

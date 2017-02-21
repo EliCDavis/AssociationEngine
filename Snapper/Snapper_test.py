@@ -17,7 +17,7 @@ def test_should_receive_data_from_attached_sensor():
     snapper = Snapper()
     sensor = Sensor(snapper)
     snapper.add_sensor(sensor)
-    sensor.Publish(2)
+    sensor.publish(2)
 
     assert snapper.dataBuffer[sensor.uuid] is 2
 
