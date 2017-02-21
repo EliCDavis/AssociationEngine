@@ -31,7 +31,7 @@ class Relationship:
         sensor_y.add_subscriber(self)
 
         # Keep up with the last computed association value
-        self.last_pushed_value = None
+        self._last_pushed_value = None
 
     def get_uuid(self):
         return self.uuid
@@ -41,6 +41,9 @@ class Relationship:
 
     def get_correlation_coefficient(self):
         return
+
+    def get_last_pushed_value(self):
+        return self._last_pushed_value
 
     def subscribe(self, subscriber):
         """Will add the subscriber to internal list for pushing new data
@@ -54,4 +57,4 @@ class Relationship:
         for subscriber in range(len(self.subscribers)):
             self.subscribers[subscriber].on_data(value)
 
-        self.last_pushed_value = value
+        self._last_pushed_value = value
