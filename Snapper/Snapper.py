@@ -1,3 +1,6 @@
+from ..Relationship.Variable import Variable
+
+
 class Snapper:
     def __init__(self):
         self.sensors = []
@@ -22,6 +25,16 @@ class Snapper:
         :return:
         """
         self.dataBuffer[sensor.uuid] = data
+
+    def add_sensor(self, sensor):
+        """
+        This function adds a new sensor to the snapper module and generates a corresponding variable object.
+        :return:
+        """
+        self.sensors.append(sensor)
+        newVariable = Variable()
+        self.variables.append(newVariable)
+        self.routeMap[sensor.uuid] = newVariable.uuid
 
     def create_snapshot(self):
         """
