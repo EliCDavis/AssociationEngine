@@ -17,7 +17,7 @@ class Snapper:
         """
         pass
 
-    def onData(self, sensor, data):
+    def on_data(self, sensor, data):
         """
         This function receives data from a sensor and stores it for use in snapshot building.
         :param sensor:
@@ -50,4 +50,4 @@ class Snapper:
         :return:
         """
         for variable in self.variables:
-            variable.onData(self.snapshot[variable.uuid])
+            variable.on_data(self.snapshot[variable.uuid])
