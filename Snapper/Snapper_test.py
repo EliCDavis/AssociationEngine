@@ -1,4 +1,5 @@
 from ..Sensor.Sensor import Sensor
+from ..Relationship.Variable import Variable
 from .Snapper import Snapper
 
 
@@ -27,3 +28,12 @@ def test_should_store_sensor():
     snapper.add_sensor(sensor)
 
     assert isinstance(snapper.sensors[0], Sensor)
+
+
+def test_should_generate_variable():
+    snapper = Snapper()
+    sensor = Sensor(snapper)
+    snapper.add_sensor(sensor)
+
+    assert isinstance(snapper.variables[0], Variable)
+
