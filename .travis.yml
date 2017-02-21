@@ -18,5 +18,8 @@ install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pytest numpy scipy
   - source activate test-environment
 
+# command to install dependencies
+install: "pip install -e ."
+
 # command to run tests
 script: pytest
