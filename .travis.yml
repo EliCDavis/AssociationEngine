@@ -19,7 +19,7 @@ install:
   - source activate test-environment
 
 # command to install dependencies
-install: "pip install -e ."
+# install: "pip install -e ."
 
 # command to run tests
 script: pytest
