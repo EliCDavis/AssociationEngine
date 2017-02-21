@@ -71,6 +71,9 @@ class SpearframeRelationship(Relationship):
         self.x_mono_list.clear()
         self.y_mono_list.clear()
 
+        self.current_iteration[self.sensor_x.get_uuid()].clear()
+        self.current_iteration[self.sensor_y.get_uuid()].clear()
+
         return frame
 
     def on_new_value(self, value, id_of_var):
