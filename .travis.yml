@@ -14,12 +14,12 @@ install:
   - sudo ln -s /run/shm /dev/shm
   # Useful for debugging any issues with conda
   - conda info -a
-  - pip install -e .
+
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pytest numpy scipy
   - source activate test-environment
 
 # command to install dependencies
-# install: ""
+install: "pip install -e ."
 
 # command to run tests
 script: pytest
