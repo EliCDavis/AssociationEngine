@@ -27,6 +27,10 @@ class Snapper:
         self.dataBuffer[sensor.uuid] = data
 
     def add_sensor(self, sensor):
+        """
+        This function adds a new sensor to the snapper module and generates a corresponding variable object.
+        :return:
+        """
         self.sensors.append(sensor)
         newVariable = Variable()
         self.variables.append(newVariable)
