@@ -1,6 +1,6 @@
 import math
-from .SpearframeRelationship import SpearframeRelationship, check_for_monotonic_change, generate_association
-from.Variable import Variable
+from Relationship.SpearframeRelationship import SpearframeRelationship, check_for_monotonic_change, generate_association
+from Relationship.Variable import Variable
 
 
 def test_should_initialize_empty_frames():

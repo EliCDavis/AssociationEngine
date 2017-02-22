@@ -1,6 +1,6 @@
-from ..Sensor.Sensor import Sensor
-from ..Relationship.Variable import Variable
-from .Snapper import Snapper
+from Sensor.Sensor import Sensor
+from Relationship.Variable import Variable
+from Snapper.Snapper import Snapper
 
 
 def test_should_have_sensors_field_as_empty_list_on_init():

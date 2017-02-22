@@ -1,5 +1,5 @@
-from .Relationship import Relationship
-from .Variable import Variable
+from Relationship.Relationship import Relationship
+from Relationship.Variable import Variable
 
 
 def test_should_have_last_pushed_value_as_none_on_initialization():

@@ -1,4 +1,4 @@
-from .Frame import Frame
+from Relationship.Frame import Frame
 import pytest
 
 

@@ -1,4 +1,4 @@
-from Sensor import *
+from Sensor.Sensor import *
 import math
 
 class Sine(Sensor):
