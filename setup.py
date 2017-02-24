@@ -10,7 +10,6 @@ setup(
     author = "Senior Design Team MSU",
     author_email = "ecd157@msstate.edu",
     description = ("Correlation values between variables"),
-    long_description=open(README).read(),
     license = "MIT",
     keywords = "association correlation spearman",
     url = "https://github.com/EliCDavis/AssociationEngine",
