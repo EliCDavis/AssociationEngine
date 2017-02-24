@@ -1,5 +1,3 @@
-
-
 class Frame:
     """A collection of correlations between two variable for a time span
 
@@ -25,26 +23,29 @@ class Frame:
 
     def get_final_correlation(self):
         """
-        Returns the current correlation the frame has computed given past correlations
+        Returns the current correlation the frame has computed given past
+        correlations
         """
         return self.final_correlation
 
     def add_correlation(self, duration, correlation):
         """
-        Adds a new correlation value with it's appropriate length of time it took up
+        Adds a new correlation value with it's appropriate length of time it
+        took up
+
         :type duration: float
         :type correlation: float
         """
 
         # Duration must have a positive value
         if duration <= 0:
-            raise ValueError("Illegal Duration: The duration of a correlation must be positive.\
-                                Received: "+str(duration))
+            raise ValueError("Illegal Duration: The duration of a correlation "
+                             "must be positive. Received: " + str(duration))
 
         # Values must be between -1 and 1
         if correlation > 1 or correlation < -1:
-            raise ValueError("Illegal Correlation: The correlation must be between (-1,  1).\
-                                Received: " + str(correlation))
+            raise ValueError("Illegal Correlation: The correlation must be "
+                             "between (-1,  1). Received: " + str(correlation))
 
         # Update all values
         self.times.append(duration)
@@ -53,8 +54,8 @@ class Frame:
         self.final_correlation = sum(
             list(
                 map(
-                    lambda x: x[0]*x[1],
+                    lambda x: x[0] * x[1],
                     list(zip(self.times, self.correlations))
-                    )
                 )
-            ) / self.total_time
+            )
+        ) / self.total_time

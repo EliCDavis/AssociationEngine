@@ -36,4 +36,3 @@ def test_should_generate_variable():
     snapper.add_sensor(sensor)
 
     assert isinstance(snapper.variables[0], Variable)
-

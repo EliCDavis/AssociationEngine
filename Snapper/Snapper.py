@@ -13,13 +13,16 @@ class Snapper:
     def step(self):
         """
         runs next incremental step in building a snapshot.
+
         :return:
         """
         pass
 
     def on_data(self, sensor, data):
         """
-        This function receives data from a sensor and stores it for use in snapshot building.
+        This function receives data from a sensor and stores it for use in
+        snapshot building.
+
         :param sensor:
         :param data:
         :return:
@@ -28,7 +31,9 @@ class Snapper:
 
     def add_sensor(self, sensor):
         """
-        This function adds a new sensor to the snapper module and generates a corresponding variable object.
+        This function adds a new sensor to the snapper module and generates
+        a corresponding variable object.
+
         :return:
         """
         self.sensors.append(sensor)
@@ -38,7 +43,9 @@ class Snapper:
 
     def create_snapshot(self):
         """
-        This function collects all available data and builds the newest snapshot of synchronized values.
+        This function collects all available data and builds the newest
+        snapshot of synchronized values.
+
         :return:
         """
         for sensor in self.dataBuffer:
@@ -46,7 +53,9 @@ class Snapper:
 
     def forward_snapshot(self):
         """
-        This function forwards data to variables in the relationship builder module.
+        This function forwards data to variables in the relationship builder
+        module.
+
         :return:
         """
         for variable in self.variables:
