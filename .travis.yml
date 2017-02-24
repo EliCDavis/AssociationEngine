@@ -1,23 +1,22 @@
 language: python
+
 python:
-  - "3.6"
+- '3.6'
 
 install:
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
-  - hash -r
-  - conda config --set always_yes yes --set changeps1 no
-  - conda update -q conda
-  # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
-  - sudo rm -rf /dev/shm
-  - sudo ln -s /run/shm /dev/shm
-  # Useful for debugging any issues with conda
-  - conda info -a
+- pip install -r requirements.txt
+- pip install -r test_requirements.txt
+- pip install tox-travis
 
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pytest numpy scipy
-  - source activate test-environment
-  - pip install -e .
+before_script:
+  tox -e flake8
 
-# command to run tests
-script: pytest
+script:
+  tox
+
+after_success:
+- coveralls
+
+notifications:
+  slack:
+    secure: vjyAu9TZPIjCKR9grbBOrTX7WoR10zQLXXVEbFInECeMiP8cfoeUT9vaZV5yvp3HxU6DZW4avpn5patxnfHbf+YYmxuErGa1U6YZOvTzsylsSyyW25VaoL7ijnaaF5U0Ro4xrnmxmoPA91CBTUXJD2KB9E+p2buqYyoQ4X/c4murqefhtiyz1qxiUz2HsWD0mj6c3Svpf+bRVrcRTCRlKJKd2G2h2E1cwSJPX5DqERagak6PLhOo200FGw9lj6utoMv5l0YIHw3Bv28FKbD06H7RUZD2GNZn9sg1zwaSdQGF3ZZ+HzHyxupT0EbySzf9hNt/TfVLKJAFFoSSUtCorWRmI/rksO14VDkyt6Gz8x+22XFU6AGElIoAIGTexjsTKXXtpEB1fr6S080T16+jJNizsyOZCOifK8NWtdty4lwLG6wn1dIdjAhrb08sSDLQlHgofc/4K87FcXI/XBF5oWFnSJGKgewpvOEOwlJr6tGEQMiOWRco7UofeXGl9K9LGcnswNu+tV+VkgMVJGfaLBhGQ4bGTym0Ownfqo8vUj0QWA/HvvbMtycze7pzWrzpHuOXbRpVWZelUklc4khdd8KVZW8qupoW+JpumcadfbJ3l8BPCLtlqk6eprdFVGXn14Hv8hzZxnI1nI7Qb3VXsTPSCQk2tyIm5dhEGYjGUOU=

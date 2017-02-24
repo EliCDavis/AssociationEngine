@@ -1,5 +1,4 @@
 class AssociationMatrix:
-
     def __init__(self):
         """
         Simple initialization function.

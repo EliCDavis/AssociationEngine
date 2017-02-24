@@ -1,7 +1,7 @@
-from Sensor.Sensor import *
+from Sensor.Sensor import Sensor
 import math
 
-class Cosine(Sensor):
 
+class Cosine(Sensor):
     def tick(self, time):
         self.Publish(math.cos(time))
