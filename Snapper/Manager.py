@@ -1,4 +1,3 @@
-from Relationship.Variable import Variable
 from Snapper.Snapper import Snapper
 
 
