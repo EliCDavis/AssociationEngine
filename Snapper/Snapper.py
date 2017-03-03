@@ -10,14 +10,6 @@ class Snapper:
         self.startTime = 0.0
         self.variables = []
 
-    def step(self):
-        """
-        runs next incremental step in building a snapshot.
-
-        :return:
-        """
-        pass
-
     def on_data(self, sensor, data):
         """
         This function receives data from a sensor and stores it for use in
