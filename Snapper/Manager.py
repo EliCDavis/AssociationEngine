@@ -10,7 +10,7 @@ class Manager:
         self.sensors = []
         self.route_map = {}
         self.variables = []
-        self.snapper = Snapper()
+        self.snapper = Snapper(self)
         self.matrix = AssociationMatrix()
 
     def add_sensor(self, sensor):

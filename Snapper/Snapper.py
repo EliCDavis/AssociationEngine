@@ -1,8 +1,9 @@
 class Snapper:
-    def __init__(self):
+    def __init__(self, manager):
         self.sensors = []
         self.dataBuffer = {}
         self.snapshot = {}
+        self.manager = manager
 
     def on_data(self, sensor, data):
         """
@@ -45,8 +46,7 @@ class Snapper:
 
     def get_snapshot(self):
         """
-        This function forwards data to variables in the relationship builder
-        module.
+        This function returns the current snapshot on request.
 
         :return:
         """
