@@ -1,4 +1,5 @@
 from Snapper.Snapper import Snapper
+from Snapper.AssociationMatrix import AssociationMatrix
 
 
 class Manager:
@@ -9,6 +10,7 @@ class Manager:
         self.routeMap = {}
         self.variables = []
         self.snapper = Snapper()
+        self.matrix = AssociationMatrix()
 
     def add_sensor(self):
         pass
