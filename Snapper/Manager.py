@@ -1,12 +1,15 @@
+from Relationship.Variable import Variable
+from Snapper.Snapper import Snapper
+
+
 class Manager:
 
     def __init__(self):
         self.sensors = []
         self.dataBuffer = {}
         self.routeMap = {}
-        self.snapshot = {}
-        self.startTime = 0.0
         self.variables = []
+        self.snapper = Snapper()
 
     def add_sensor(self):
         pass
