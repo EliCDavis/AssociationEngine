@@ -29,6 +29,7 @@ def test_add_and_remove_sensor_variable_pair():
     assert len(manager.sensors) is 0
     assert len(manager.variables) is 0
 
+
 def test_return_matrix():
     manager = Manager()
     matrix = manager.get_matrix()

@@ -1,5 +1,5 @@
 class Snapper:
-    def __init__(self, manager = None):
+    def __init__(self, manager=None):
         self.sensors = []
         self.dataBuffer = {}
         self.snapshot = {}
