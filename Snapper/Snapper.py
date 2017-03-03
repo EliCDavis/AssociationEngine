@@ -7,7 +7,6 @@ class Snapper:
         self.dataBuffer = {}
         self.routeMap = {}
         self.snapshot = {}
-        self.startTime = 0.0
         self.variables = []
 
     def on_data(self, sensor, data):
