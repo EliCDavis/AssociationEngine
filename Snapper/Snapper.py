@@ -1,5 +1,5 @@
 class Snapper:
-    def __init__(self, manager):
+    def __init__(self, manager = None):
         self.sensors = []
         self.dataBuffer = {}
         self.snapshot = {}
@@ -15,6 +15,15 @@ class Snapper:
         :return:
         """
         self.dataBuffer[sensor.uuid] = data
+
+        for each in self.sensors:
+            if each.uuid not in self.dataBuffer:
+                return
+
+        self.create_snapshot()
+
+        if self.manager is not None:
+            self.forward_snapshot()
 
     def add_sensor(self, sensor):
         """
@@ -53,3 +62,6 @@ class Snapper:
         self.create_snapshot()
 
         return self.snapshot
+
+    def forward_snapshot(self):
+        self.manager.on_data(self.snapshot)

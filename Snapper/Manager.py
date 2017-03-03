@@ -48,3 +48,9 @@ class Manager:
 
     def get_matrix(self):
         return self.matrix
+
+    def on_data(self, snapshot):
+        for sensorID in snapshot:
+            variable = self.route_map[sensorID]
+            value = snapshot[sensorID]
+            variable.on_data(value)
