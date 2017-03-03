@@ -24,6 +24,15 @@ def test_should_store_sensor():
     assert isinstance(snapper.sensors[0], Sensor)
 
 
+def test_should_remove_sensor():
+    snapper = Snapper()
+    sensor = Sensor(snapper)
+    snapper.add_sensor(sensor)
+    snapper.remove_sensor(sensor)
+
+    assert len(snapper.sensors) is 0
+
+
 def test_should_generate_and_return_snapshot():
     snapper = Snapper()
     sensor_a = Sensor(snapper)

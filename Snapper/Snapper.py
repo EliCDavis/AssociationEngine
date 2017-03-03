@@ -17,12 +17,19 @@ class Snapper:
 
     def add_sensor(self, sensor):
         """
-        This function adds a new sensor to the snapper module and generates
-        a corresponding variable object.
+        This function adds a new sensor to the snapper module.
 
         :return:
         """
         self.sensors.append(sensor)
+
+    def remove_sensor(self, sensor):
+        """
+        This function removes an old sensor from the snapper module.
+
+        :return:
+        """
+        self.sensors.remove(sensor)
 
     def create_snapshot(self):
         """
