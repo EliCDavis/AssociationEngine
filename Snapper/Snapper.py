@@ -29,6 +29,8 @@ class Snapper:
 
         :return:
         """
+        self.dataBuffer.pop(sensor.uuid, None)
+        self.snapshot.pop(sensor.uuid, None)
         self.sensors.remove(sensor)
 
     def create_snapshot(self):
@@ -38,8 +40,8 @@ class Snapper:
 
         :return:
         """
-        for sensor in self.dataBuffer:
-            self.snapshot[sensor] = self.dataBuffer[sensor]
+        for sensorID in self.dataBuffer:
+            self.snapshot[sensorID] = self.dataBuffer[sensorID]
 
     def get_snapshot(self):
         """
