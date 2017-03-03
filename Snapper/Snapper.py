@@ -64,4 +64,9 @@ class Snapper:
         return self.snapshot
 
     def forward_snapshot(self):
+        """
+        Forwards/publishes the snapshot to the manager for further process.
+
+        :return:
+        """
         self.manager.on_data(self.snapshot)

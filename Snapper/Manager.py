@@ -32,6 +32,13 @@ class Manager:
         self.route_map[sensor.uuid] = newVariable
 
     def remove_sensor(self, sensor):
+        """
+        This function removes a new sensor to the snapper module, removes
+        variable from manager, and removes the corresponding relationships
+        from the matrix.
+
+        :return:
+        """
         variable = self.route_map[sensor.uuid]
         self.route_map.pop(sensor.uuid)
 
@@ -47,9 +54,20 @@ class Manager:
         self.variables.remove(variable)
 
     def get_matrix(self):
+        """
+        Returns the underlying matrix on demand.
+
+        :return:
+        """
         return self.matrix
 
     def on_data(self, snapshot):
+        """
+        Routes all data from incoming snapshot to the appropriate variables.
+
+        :param snapshot:
+        :return:
+        """
         for sensorID in snapshot:
             variable = self.route_map[sensorID]
             value = snapshot[sensorID]
