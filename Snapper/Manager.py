@@ -34,4 +34,4 @@ class Manager:
         self.variables.remove(variable)
 
     def get_matrix(self):
-        pass
+        return self.matrix
