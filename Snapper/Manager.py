@@ -1,6 +1,7 @@
 from Snapper.Snapper import Snapper
 from Snapper.AssociationMatrix import AssociationMatrix
 from Relationship.Variable import Variable
+from Relationship.SpearframeRelationship import SpearframeRelationship
 
 
 class Manager:
@@ -22,12 +23,24 @@ class Manager:
         self.sensors.append(sensor)
         self.snapper.add_sensor(sensor)
         newVariable = Variable()
+
+        for var in self.variables:
+            relationship = SpearframeRelationship(newVariable, var)
+            self.matrix.add_relationship(relationship)
+
         self.variables.append(newVariable)
         self.route_map[sensor.uuid] = newVariable
 
     def remove_sensor(self, sensor):
         variable = self.route_map[sensor.uuid]
         self.route_map.pop(sensor.uuid)
+
+        for var in self.variables:
+            if var == variable:
+                pass
+            else:
+                relationship = SpearframeRelationship(Variable, var)
+                self.matrix.remove_relationship(relationship)
 
         self.snapper.remove_sensor(sensor)
         self.sensors.remove(sensor)
