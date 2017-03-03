@@ -46,7 +46,7 @@ def test_should_return_whole_dict():
     Am = AssociationMatrix()
     Am.add_relationship(Rxy)
     Am.add_relationship(Rwz)
-    a = Am.get_all_relationships()
+    a = Am.get_value_matrix()
     assert len(a) == 2
 
 

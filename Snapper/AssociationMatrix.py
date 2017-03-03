@@ -20,7 +20,7 @@ class AssociationMatrix:
         self.relationships.pop(frozenset(a), None)
         return
 
-    def get_all_relationships(self):
+    def get_value_matrix(self):
         dict_with_values = {}
         for key, value in self.relationships.items():
                 dict_with_values[key] = value.get_correlation_coefficient()
