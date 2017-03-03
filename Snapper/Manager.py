@@ -13,7 +13,16 @@ class Manager:
         self.matrix = AssociationMatrix()
 
     def add_sensor(self):
-        pass
+        """
+        This function adds a new sensor to the snapper module and generates
+        a corresponding variable object.
+
+        :return:
+        """
+        self.sensors.append(sensor)
+        newVariable = Variable()
+        self.variables.append(newVariable)
+        self.routeMap[sensor.uuid] = newVariable.uuid
 
     def remove_sensor(self):
         pass

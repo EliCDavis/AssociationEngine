@@ -1,13 +1,8 @@
-from Relationship.Variable import Variable
-
-
 class Snapper:
     def __init__(self):
         self.sensors = []
         self.dataBuffer = {}
-        self.routeMap = {}
         self.snapshot = {}
-        self.variables = []
 
     def on_data(self, sensor, data):
         """
@@ -28,9 +23,6 @@ class Snapper:
         :return:
         """
         self.sensors.append(sensor)
-        newVariable = Variable()
-        self.variables.append(newVariable)
-        self.routeMap[sensor.uuid] = newVariable.uuid
 
     def create_snapshot(self):
         """
@@ -40,14 +32,15 @@ class Snapper:
         :return:
         """
         for sensor in self.dataBuffer:
-            self.snapshot[self.routeMap[sensor]] = self.dataBuffer[sensor]
+            self.snapshot[sensor] = self.dataBuffer[sensor]
 
-    def forward_snapshot(self):
+    def get_snapshot(self):
         """
         This function forwards data to variables in the relationship builder
         module.
 
         :return:
         """
-        for variable in self.variables:
-            variable.on_data(self.snapshot[variable.uuid])
+        self.create_snapshot()
+
+        return self.snapshot
