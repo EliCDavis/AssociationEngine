@@ -19,11 +19,9 @@ def test_should_find_sensor_uuid_in_frozenset():
     x = False
     Vx = Variable()
     Vy = Variable()
-    Rxy = Relationship(Vx,Vy)
+    Rxy = Relationship(Vx, Vy)
     Am = AssociationMatrix()
     Am.add_relationship(Rxy)
-    a = (Vx.get_uuid(), Vy.get_uuid())
-    fs = frozenset(a)
     for key in Am.relationships:
         for value in key:
             if value == Vx.get_uuid():

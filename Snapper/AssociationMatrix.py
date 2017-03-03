@@ -3,16 +3,20 @@ class AssociationMatrix:
         self.relationships = {}
 
     def add_relationship(self, relationship):
-        a = (relationship.sensor_x.get_uuid(), relationship.sensor_y.get_uuid())
+        a = (relationship.sensor_x.get_uuid(),
+             relationship.sensor_y.get_uuid())
         self.relationships[frozenset(a)] = relationship
         return
 
     def remove_relationship(self, relationship):
-        """Removing relationships could be different depending on who is doing the removing.
-            If another module does it the relationship_id could be used. If the end-user
-            is remvoing them then it will need to be searched by a pair of sensors.
+        """Removing relationships could be different depending
+            on who is doing the removing. If another module does
+            it the relationship_id could be used. If the end-user
+            is removing them then it will need to be searched
+            by a pair of sensors.
         """
-        a = (relationship.sensor_x.get_uuid(), relationship.sensor_y.get_uuid())
+        a = (relationship.sensor_x.get_uuid(),
+             relationship.sensor_y.get_uuid())
         self.relationships.pop(frozenset(a), None)
         return
 
@@ -26,12 +30,14 @@ class AssociationMatrix:
         return dict_with_values
 
     def get_single_relationship(self, sensorpair):
-        """I need to know who will call this and how, i.e. end user with 2 sensor ids or
+        """I need to know who will call this and how, i.e. end
+            user with 2 sensor ids or
             sensor_id->sensor_uuid->frozenset.
         """
         pass
 
     def get_relationships_by_value_range(self, minvalue, maxvalue):
+        sensor_pairs = {}
         for key, value in self.relationships.items():
             if minvalue <= value.get_correlation_coefficient() <= maxvalue:
                 sensor_pairs[key] = value.get_correlation_coefficient()
