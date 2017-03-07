@@ -4,7 +4,7 @@ from Snapper.Snapper import Snapper
 
 def test_should_have_sensors_field_as_empty_list_on_init():
     snapper = Snapper()
-    assert len(snapper.sensors) is 0
+    assert snapper.sensors == []
 
 
 def test_should_receive_data_from_attached_sensor():
@@ -21,7 +21,7 @@ def test_should_store_sensor():
     sensor = Sensor(snapper)
     snapper.add_sensor(sensor)
 
-    assert isinstance(snapper.sensors[0], Sensor)
+    assert snapper.sensors == [sensor]
 
 
 def test_should_remove_sensor():
@@ -30,7 +30,7 @@ def test_should_remove_sensor():
     snapper.add_sensor(sensor)
     snapper.remove_sensor(sensor)
 
-    assert len(snapper.sensors) is 0
+    assert snapper.sensors == []
 
 
 def test_should_generate_and_return_snapshot():
