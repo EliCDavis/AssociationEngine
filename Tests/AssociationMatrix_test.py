@@ -25,7 +25,6 @@ def test_should_remove_specified_relationship():
     Am = AssociationMatrix()
     Am.add_relationship(Rxy)
     Am.add_relationship(Rwz)
-    initial_length = len(Am.relationships)
     Am.remove_relationship(Rwz)
     assert Am.relationships == {frozenset((Vx.uuid, Vy.uuid)): Rxy}
 
