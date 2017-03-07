@@ -5,39 +5,29 @@ from Relationship.Variable import Variable
 
 def test_should_have_relationships_field_as_empty_dictionary_on_init():
     associationMatrix = AssociationMatrix()
-    assert len(associationMatrix.relationships) is 0
+    assert associationMatrix.relationships == dict()
 
 
 def test_should_add_relationship_to_relationships():
-    Rxy = Relationship(Variable(), Variable())
-    Am = AssociationMatrix()
-    Am.add_relationship(Rxy)
-    assert Am.relationships is not 0
-
-
-def test_should_find_sensor_uuid_in_frozenset():
-    x = False
     Vx = Variable()
     Vy = Variable()
     Rxy = Relationship(Vx, Vy)
     Am = AssociationMatrix()
     Am.add_relationship(Rxy)
-    for key in Am.relationships:
-        for value in key:
-            if value == Vx.get_uuid():
-                x = True
-    assert x is True
+    assert Am.relationships == {frozenset((Vx.uuid, Vy.uuid)): Rxy}
 
 
 def test_should_remove_specified_relationship():
-    Rxy = Relationship(Variable(), Variable())
+    Vx = Variable()
+    Vy = Variable()
+    Rxy = Relationship(Vx, Vy)
     Rwz = Relationship(Variable(), Variable())
     Am = AssociationMatrix()
     Am.add_relationship(Rxy)
     Am.add_relationship(Rwz)
     initial_length = len(Am.relationships)
     Am.remove_relationship(Rwz)
-    assert len(Am.relationships) == (initial_length - 1)
+    assert Am.relationships == {frozenset((Vx.uuid, Vy.uuid)): Rxy}
 
 
 def test_should_return_whole_dict():
@@ -46,8 +36,10 @@ def test_should_return_whole_dict():
     Am = AssociationMatrix()
     Am.add_relationship(Rxy)
     Am.add_relationship(Rwz)
+    key1 = frozenset((Rxy.sensor_x.get_uuid(), Rxy.sensor_y.get_uuid()))
+    key2 = frozenset((Rwz.sensor_x.get_uuid(), Rwz.sensor_y.get_uuid()))
     a = Am.get_value_matrix()
-    assert len(a) == 2
+    assert a == {key1: None, key2: None}
 
 
 def test_should_return_values_in_range():
