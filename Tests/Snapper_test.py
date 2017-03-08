@@ -1,21 +1,15 @@
 from Sensor.Sensor import Sensor
-from Relationship.Variable import Variable
 from Snapper.Snapper import Snapper
 
 
 def test_should_have_sensors_field_as_empty_list_on_init():
     snapper = Snapper()
-    assert len(snapper.sensors) is 0
-
-
-def test_should_have_variables_field_as_empty_list_on_init():
-    snapper = Snapper()
-    assert len(snapper.variables) is 0
+    assert snapper.sensors == []
 
 
 def test_should_receive_data_from_attached_sensor():
     snapper = Snapper()
-    sensor = Sensor(snapper)
+    sensor = Sensor()
     snapper.add_sensor(sensor)
     sensor.publish(2)
 
@@ -24,15 +18,31 @@ def test_should_receive_data_from_attached_sensor():
 
 def test_should_store_sensor():
     snapper = Snapper()
-    sensor = Sensor(snapper)
+    sensor = Sensor()
     snapper.add_sensor(sensor)
 
-    assert isinstance(snapper.sensors[0], Sensor)
+    assert snapper.sensors == [sensor]
 
 
-def test_should_generate_variable():
+def test_should_remove_sensor():
     snapper = Snapper()
-    sensor = Sensor(snapper)
+    sensor = Sensor()
     snapper.add_sensor(sensor)
+    snapper.remove_sensor(sensor)
 
-    assert isinstance(snapper.variables[0], Variable)
+    assert snapper.sensors == []
+
+
+def test_should_generate_and_return_snapshot():
+    snapper = Snapper()
+    sensor_a = Sensor()
+    snapper.add_sensor(sensor_a)
+    sensor_a.publish(1)
+    sensor_b = Sensor()
+    snapper.add_sensor(sensor_b)
+    sensor_b.publish(3)
+
+    snapshot = snapper.get_snapshot()
+
+    assert snapshot[sensor_a.uuid] is 1
+    assert snapshot[sensor_b.uuid] is 3

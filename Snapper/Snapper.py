@@ -1,22 +1,9 @@
-from Relationship.Variable import Variable
-
-
 class Snapper:
-    def __init__(self):
+    def __init__(self, manager=None):
         self.sensors = []
         self.dataBuffer = {}
-        self.routeMap = {}
         self.snapshot = {}
-        self.startTime = 0.0
-        self.variables = []
-
-    def step(self):
-        """
-        runs next incremental step in building a snapshot.
-
-        :return:
-        """
-        pass
+        self.manager = manager
 
     def on_data(self, sensor, data):
         """
@@ -29,17 +16,33 @@ class Snapper:
         """
         self.dataBuffer[sensor.uuid] = data
 
+        for each in self.sensors:
+            if each.uuid not in self.dataBuffer:
+                return
+
+        self.create_snapshot()
+
+        if self.manager is not None:
+            self.forward_snapshot()
+
     def add_sensor(self, sensor):
         """
-        This function adds a new sensor to the snapper module and generates
-        a corresponding variable object.
+        This function adds a new sensor to the snapper module.
 
         :return:
         """
         self.sensors.append(sensor)
-        newVariable = Variable()
-        self.variables.append(newVariable)
-        self.routeMap[sensor.uuid] = newVariable.uuid
+        sensor.set_snapper_callback(self)
+
+    def remove_sensor(self, sensor):
+        """
+        This function removes an old sensor from the snapper module.
+
+        :return:
+        """
+        self.dataBuffer.pop(sensor.uuid, None)
+        self.snapshot.pop(sensor.uuid, None)
+        self.sensors.remove(sensor)
 
     def create_snapshot(self):
         """
@@ -48,15 +51,23 @@ class Snapper:
 
         :return:
         """
-        for sensor in self.dataBuffer:
-            self.snapshot[self.routeMap[sensor]] = self.dataBuffer[sensor]
+        for sensorID in self.dataBuffer:
+            self.snapshot[sensorID] = self.dataBuffer[sensorID]
 
-    def forward_snapshot(self):
+    def get_snapshot(self):
         """
-        This function forwards data to variables in the relationship builder
-        module.
+        This function returns the current snapshot on request.
 
         :return:
         """
-        for variable in self.variables:
-            variable.on_data(self.snapshot[variable.uuid])
+        self.create_snapshot()
+
+        return self.snapshot
+
+    def forward_snapshot(self):
+        """
+        Forwards/publishes the snapshot to the manager for further process.
+
+        :return:
+        """
+        self.manager.on_data(self.snapshot)
