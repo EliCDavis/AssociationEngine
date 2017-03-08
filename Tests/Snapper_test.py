@@ -9,7 +9,7 @@ def test_should_have_sensors_field_as_empty_list_on_init():
 
 def test_should_receive_data_from_attached_sensor():
     snapper = Snapper()
-    sensor = Sensor(snapper)
+    sensor = Sensor()
     snapper.add_sensor(sensor)
     sensor.publish(2)
 
@@ -18,7 +18,7 @@ def test_should_receive_data_from_attached_sensor():
 
 def test_should_store_sensor():
     snapper = Snapper()
-    sensor = Sensor(snapper)
+    sensor = Sensor()
     snapper.add_sensor(sensor)
 
     assert snapper.sensors == [sensor]
@@ -26,7 +26,7 @@ def test_should_store_sensor():
 
 def test_should_remove_sensor():
     snapper = Snapper()
-    sensor = Sensor(snapper)
+    sensor = Sensor()
     snapper.add_sensor(sensor)
     snapper.remove_sensor(sensor)
 
@@ -35,10 +35,10 @@ def test_should_remove_sensor():
 
 def test_should_generate_and_return_snapshot():
     snapper = Snapper()
-    sensor_a = Sensor(snapper)
+    sensor_a = Sensor()
     snapper.add_sensor(sensor_a)
     sensor_a.publish(1)
-    sensor_b = Sensor(snapper)
+    sensor_b = Sensor()
     snapper.add_sensor(sensor_b)
     sensor_b.publish(3)
 

@@ -13,7 +13,7 @@ def test_should_initialize_snapper_and_matrix():
 
 def test_add_and_remove_sensor_variable_pair():
     manager = Manager()
-    sensor = Sensor(manager.snapper)
+    sensor = Sensor()
     manager.add_sensor(sensor)
 
     assert manager.sensors == [sensor]

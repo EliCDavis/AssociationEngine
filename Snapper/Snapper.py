@@ -32,6 +32,7 @@ class Snapper:
         :return:
         """
         self.sensors.append(sensor)
+        sensor.set_snapper_callback(self)
 
     def remove_sensor(self, sensor):
         """
