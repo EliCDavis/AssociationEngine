@@ -24,6 +24,7 @@ def test_add_and_remove_sensor_variable_pair():
     assert manager.sensors == []
     assert manager.variables == []
 
+
 def test_add_multiple_sensors():
     manager = Manager()
     sensor1 = Sensor()
