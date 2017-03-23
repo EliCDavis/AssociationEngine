@@ -53,3 +53,12 @@ def test_return_matrix():
     matrix = manager.get_matrix()
 
     assert matrix == manager.matrix
+
+
+def test_push_snapshot():
+    """
+    This needs to be tested, but there is currently no good way to test.
+    We should add a way to verify that a value was in fact pushed to a variable
+    without needing to involve any objects farther along the process.
+    """
+    pass
