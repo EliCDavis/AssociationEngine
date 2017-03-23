@@ -18,11 +18,13 @@ def test_add_and_remove_sensor_variable_pair():
 
     assert manager.sensors == [sensor]
     assert isinstance(manager.variables[0], Variable)
+    assert isinstance(manager.route_map[sensor.uuid], Variable)
 
     manager.remove_sensor(sensor)
 
     assert manager.sensors == []
     assert manager.variables == []
+    assert manager.route_map == {}
 
 
 def test_add_multiple_sensors():
@@ -35,12 +37,15 @@ def test_add_multiple_sensors():
     assert manager.sensors == [sensor1, sensor2]
     assert isinstance(manager.variables[0], Variable)
     assert isinstance(manager.variables[1], Variable)
+    assert isinstance(manager.route_map[sensor1.uuid], Variable)
+    assert isinstance(manager.route_map[sensor2.uuid], Variable)
 
     manager.remove_sensor(sensor1)
     manager.remove_sensor(sensor2)
 
     assert manager.sensors == []
     assert manager.variables == []
+    assert manager.route_map == {}
 
 
 def test_return_matrix():
