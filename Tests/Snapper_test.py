@@ -2,6 +2,11 @@ from Sensor.Sensor import Sensor
 from Snapper.Snapper import Snapper
 
 
+class TestManager:
+    def on_data(self, snapshot):
+        self.snapshot = snapshot
+
+
 def test_should_have_sensors_field_as_empty_list_on_init():
     snapper = Snapper()
     assert snapper.sensors == []
@@ -14,6 +19,48 @@ def test_should_receive_data_from_attached_sensor():
     sensor.publish(2)
 
     assert snapper.dataBuffer[sensor.uuid] is 2
+
+
+def test_should_receive_data_from_multiple_sensors():
+    snapper = Snapper()
+    sensor1 = Sensor()
+    snapper.add_sensor(sensor1)
+    sensor1.publish(2)
+    sensor2 = Sensor()
+    snapper.add_sensor(sensor2)
+    sensor2.publish(3)
+
+    assert snapper.dataBuffer == {sensor1.uuid: 2, sensor2.uuid: 3}
+    assert snapper.get_snapshot() == {sensor1.uuid: 2, sensor2.uuid: 3}
+
+
+def test_should_properly_generate_snapshot_from_complete_data():
+    snapper = Snapper()
+    sensor1 = Sensor()
+    snapper.add_sensor(sensor1)
+    sensor2 = Sensor()
+    snapper.add_sensor(sensor2)
+
+    sensor1.publish(2)
+
+    assert snapper.snapshot == {}
+
+    sensor2.publish(3)
+
+    assert snapper.get_snapshot() == {sensor1.uuid: 2, sensor2.uuid: 3}
+
+
+def test_should_forward_snapshot_once_data_complete():
+    manager = TestManager()
+    snapper = Snapper(manager)
+    sensor1 = Sensor()
+    snapper.add_sensor(sensor1)
+    sensor1.publish(2)
+    sensor2 = Sensor()
+    snapper.add_sensor(sensor2)
+    sensor2.publish(3)
+
+    assert manager.snapshot == {sensor1.uuid: 2, sensor2.uuid: 3}
 
 
 def test_should_store_sensor():
