@@ -16,7 +16,7 @@ class MockRelationship(Relationship):
         # set up our parent class
         Relationship.__init__(self, sensor_x, sensor_y)
 
-        self.correlation_coefficient = 0
+        self.correlation_coefficient = None
 
     def get_correlation_coefficient(self):
         return self.correlation_coefficient
