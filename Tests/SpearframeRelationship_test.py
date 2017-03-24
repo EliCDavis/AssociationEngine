@@ -40,3 +40,7 @@ def test_should_show_weak_association():
         var2.on_data(math.cos(math.radians(degree * 10)))
 
     assert rel.get_last_pushed_value() < .1
+
+
+def test_should_return_correlation_coefficient():
+    pass
