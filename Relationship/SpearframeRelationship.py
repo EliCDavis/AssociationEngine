@@ -104,6 +104,16 @@ class SpearframeRelationship(Relationship):
                 self.current_iteration[self.sensor_y.get_uuid()]))
             self._push_to_subscribers(generate_association(self.frames))
 
+    def get_correlation_coefficient(self):
+        """
+        This method creates a pseudo-frame as soon as it is called
+        gathers the rest of the frames to generate
+        the correlation coefficient
+
+        :return: value: float
+        """
+        raise NotImplementedError
+
 
 def check_for_monotonic_change(x, y, z):
     """
