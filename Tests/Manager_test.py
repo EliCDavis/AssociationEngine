@@ -3,6 +3,7 @@ from Snapper.Snapper import Snapper
 from Snapper.AssociationMatrix import AssociationMatrix
 from Sensor.Sensor import Sensor
 from Relationship.Variable import Variable
+from unittest.mock import MagicMock
 
 
 def test_should_initialize_snapper_and_matrix():
@@ -56,9 +57,21 @@ def test_return_matrix():
 
 
 def test_push_snapshot():
-    """
-    This needs to be tested, but there is currently no good way to test.
-    We should add a way to verify that a value was in fact pushed to a variable
-    without needing to involve any objects farther along the process.
-    """
-    pass
+    manager = Manager()
+    sensor1 = Sensor()
+    sensor2 = Sensor()
+    manager.add_sensor(sensor1)
+    manager.add_sensor(sensor2)
+
+    variable1 = manager.route_map[sensor1.uuid]
+    variable2 = manager.route_map[sensor2.uuid]
+
+    variable1.on_data = MagicMock()
+    variable2.on_data = MagicMock()
+
+    snapshot = {sensor1.uuid: 1, sensor2.uuid: 2}
+
+    manager.on_data(snapshot)
+
+    variable1.on_data.assert_called_with(1)
+    variable2.on_data.assert_called_with(2)
