@@ -1,16 +1,25 @@
+import json
+from threading import Thread
+
 from flask import Flask, send_file
 from flask_socketio import SocketIO
+
+from Sensor.Sensor import Sensor
 from Snapper.Manager import Manager
 
 
 app = Flask(__name__, static_folder='dist', static_url_path='')
 io = SocketIO(app)
-
 AEManager = Manager()
+thread = None
 
 
 @app.route("/")
 def index():
+    global thread
+    if thread is None:
+        thread = Thread(target=setup_Manager)
+        thread.start()
     return app.send_static_file('index.html')
 
 
@@ -19,23 +28,20 @@ def socketio():
     return send_file("python_static/socket.io.1.7.3.min.js")
 
 
-@io.on('message')
-def handle_message(message):
-    print("received message:", message)
-    io.send(message)
+@io.on("connect")
+def client_connected():
+    print("New Connection")
+    for uuid in map(lambda sensor: sensor.uuid, AEManager.sensors):
+        io.emit("sensor added", json.dumps(str(uuid)))
 
 
-@io.on('add sensor')
-def add_sensor(sensor):
-    print("received call to add:", sensor)
-    io.send(sensor)
-
-
-@io.on('remove sensor')
-def remove_sensor(sensor):
-    print("received call to remove:", sensor)
-    io.send(sensor)
+def setup_Manager():
+    global AEManager
+    s1 = Sensor()
+    AEManager.add_sensor(s1)
+    print("setup done")
 
 
 if __name__ == '__main__':
     io.run(app)
+    setup_Manager()
