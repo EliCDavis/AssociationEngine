@@ -4,8 +4,6 @@ function AppDirective() {
     return {
         'restrict': 'E',
         'templateUrl': 'partial/directives/app.html',
-        'controller': /*@ngInject*/ function() {
-
-        }
+        'controller': /*@ngInject*/ function(SocketConnectionService) {}
     };
 }
