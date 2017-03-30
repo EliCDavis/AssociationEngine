@@ -6,21 +6,21 @@ import pytest
 
 
 @pytest.fixture()
-def rel_1():
+def rel_25():
     rel = Relationship(Variable(), Variable())
     rel.get_correlation_coefficient = MagicMock(return_value=0.25)
     return rel
 
 
 @pytest.fixture()
-def rel_2():
+def rel_50():
     rel = Relationship(Variable(), Variable())
     rel.get_correlation_coefficient = MagicMock(return_value=0.5)
     return rel
 
 
 @pytest.fixture()
-def rel_3():
+def rel_75():
     rel = Relationship(Variable(), Variable())
     rel.get_correlation_coefficient = MagicMock(return_value=0.75)
     return rel
@@ -64,11 +64,11 @@ def test_should_return_whole_dict():
     assert a == {key1: None, key2: None}
 
 
-def test_should_return_values_in_range(rel_1, rel_2, rel_3):
+def test_should_return_values_in_range(rel_25, rel_50, rel_75):
     association_matrix = AssociationMatrix()
-    association_matrix.add_relationship(rel_1)
-    association_matrix.add_relationship(rel_2)
-    association_matrix.add_relationship(rel_3)
+    association_matrix.add_relationship(rel_25)
+    association_matrix.add_relationship(rel_50)
+    association_matrix.add_relationship(rel_75)
     min_val = 0.1
     max_val = 0.6
     sensor_pairs_in_range = \

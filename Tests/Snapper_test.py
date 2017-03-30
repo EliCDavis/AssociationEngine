@@ -1,10 +1,7 @@
 from Sensor.Sensor import Sensor
 from Snapper.Snapper import Snapper
-
-
-class TestManager:
-    def on_data(self, snapshot):
-        self.snapshot = snapshot
+from Snapper.Manager import Manager
+from unittest.mock import MagicMock
 
 
 def test_should_have_sensors_field_as_empty_list_on_init():
@@ -51,7 +48,8 @@ def test_should_properly_generate_snapshot_from_complete_data():
 
 
 def test_should_forward_snapshot_once_data_complete():
-    manager = TestManager()
+    manager = Manager()
+    manager.on_data = MagicMock()
     snapper = Snapper(manager)
     sensor1 = Sensor()
     snapper.add_sensor(sensor1)
@@ -60,7 +58,7 @@ def test_should_forward_snapshot_once_data_complete():
     snapper.add_sensor(sensor2)
     sensor2.publish(3)
 
-    assert manager.snapshot == {sensor1.uuid: 2, sensor2.uuid: 3}
+    manager.on_data.assert_called_with({sensor1.uuid: 2, sensor2.uuid: 3})
 
 
 def test_should_store_sensor():
