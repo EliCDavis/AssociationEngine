@@ -15,6 +15,7 @@ function SensorListingDirective() {
                 self.nodes = nodes;
             }).subscribe();
 
+
         }
     };
 }

@@ -14,11 +14,36 @@ function GraphDirective() {
             var graph = new NodeView(canvas);
 
             graph.setOption('applyGravity', false);
+            graph.setOption('centerOnNodes', false);
 
-            GraphService.Nodes$.subscribe(function(nodes) {
-                nodes.forEach(function(nodeRenderData) {
-                    graph.createNode(nodeRenderData);
+            // Render most recent data.
+            GraphService.Nodes$.combineLatest(GraphService.RelationValue$).subscribe(function(data) {
+
+                var nodesRendered = {};
+
+                // Add nodes
+                data[0].forEach(function(nodeRenderData) {
+                    nodesRendered[nodeRenderData.renderData.id] = graph.createNode(nodeRenderData);
                 });
+
+                // Add connections between them
+                data[1].forEach(function(line) {
+                    graph.linkNodes(nodesRendered[line.ids[0]], nodesRendered[line.ids[1]], {
+                        relationship: line.value
+                    });
+                });
+
+            });
+
+            // Override line renderer to make lines thicker with stronger relationships
+            graph.setLinkRenderMethod(function(graph, point1, point2, link) {
+                var ctx = graph.getContext();
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 25 * graph.getScale() * link.linkData.relationship;
+                ctx.beginPath();
+                ctx.moveTo(point1[0], point1[1]);
+                ctx.lineTo(point2[0], point2[1]);
+                ctx.stroke();
             });
 
 
