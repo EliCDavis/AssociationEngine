@@ -46,7 +46,7 @@ class Manager:
             if var == variable:
                 pass
             else:
-                relationship = SpearframeRelationship(Variable, var)
+                relationship = SpearframeRelationship(variable, var)
                 self.matrix.remove_relationship(relationship)
 
         self.snapper.remove_sensor(sensor)
