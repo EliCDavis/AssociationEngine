@@ -1,4 +1,3 @@
-import pytest
 import csv
 
 from Sensor.Sensor import Sensor
