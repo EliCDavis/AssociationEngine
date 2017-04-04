@@ -49,3 +49,4 @@ association_engine.egg-info
 Examples/webpage/.vscode/
 Examples/webpage/dist/
 Examples/webpage/node_modules/
+.vscode/
