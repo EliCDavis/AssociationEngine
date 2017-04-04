@@ -1,21 +1,12 @@
 import math
 
-from Relationship.SpearframeRelationship import\
-    SpearframeRelationship, check_for_monotonic_change
+from Relationship.SpearframeRelationship import SpearframeRelationship
 from Relationship.Variable import Variable
 
 
 def test_should_initialize_empty_frames():
     rel = SpearframeRelationship(Variable(), Variable())
     assert len(rel.frames) == 0
-
-
-def test_should_show_monotonic_change():
-    assert check_for_monotonic_change(1, 2, 1) is True
-
-
-def test_should_show_no_monotonic_change():
-    assert check_for_monotonic_change(1, 2, 3) is False
 
 
 def test_should_show_strong_association():
