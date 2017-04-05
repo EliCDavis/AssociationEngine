@@ -46,7 +46,7 @@ class Manager:
             if var == variable:
                 pass
             else:
-                relationship = SpearframeRelationship(Variable, var)
+                relationship = SpearframeRelationship(variable, var)
                 self.matrix.remove_relationship(relationship)
 
         self.snapper.remove_sensor(sensor)
@@ -60,6 +60,22 @@ class Manager:
         :return:
         """
         return self.matrix
+
+    def get_value_matrix(self):
+        """
+        Returns the underlying matrix on demand.
+
+        :return:
+        """
+        return self.matrix.get_value_matrix()
+
+    def get_relationships_by_value_range(self, minvalue, maxvalue):
+        """
+        Returns the underlying matrix on demand.
+
+        :return:
+        """
+        return self.matrix.get_relationships_by_value_range(minvalue, maxvalue)
 
     def on_data(self, snapshot):
         """
