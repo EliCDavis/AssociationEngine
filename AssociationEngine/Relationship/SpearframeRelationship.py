@@ -1,4 +1,6 @@
 from scipy.stats import spearmanr
+import sqlite3
+import math
 
 from AssociationEngine.Relationship.Frame import Frame
 from AssociationEngine.Relationship.Relationship import Relationship
@@ -19,13 +21,20 @@ class SpearframeRelationship(Relationship):
         :type sensor_x: Variable
         """
 
-        # The current aggregation of veriable values before a new frame has
+        # The current aggregation of variable values before a new frame has
         # been generated
         self.current_iteration = {sensor_x.get_uuid(): [],
                                   sensor_y.get_uuid(): []}
 
+        self.connection = sqlite3.connect("spearframe.db")
+        # self.connection.execute("create table if not
+        # exists frames (relationshipId typ1, frameValue, colN typN)")
+
         # Create list for keeping up with all previous frames computed
         self.frames = []
+
+        self.x_last_direction = 0
+        self.y_last_direction = 0
 
         # set up our parent class
         Relationship.__init__(self, sensor_x, sensor_y)
@@ -36,21 +45,37 @@ class SpearframeRelationship(Relationship):
         # sensor_y
         self.y_mono_list = []
 
+    def get_value_between_times(self):
+
+        return 0
+
     def __should_generate_new_frame(self, x_vals, y_vals):
 
-        # Make sure their equal in length before going further
-        if len(x_vals) != len(y_vals) or len(x_vals) < 3:
+        if len(x_vals) == 2 and len(y_vals) == 2:
+            self.x_last_direction = get_current_direction(
+                x_vals[-2], x_vals[-1], self.x_last_direction)
+            self.y_last_direction = get_current_direction(
+                y_vals[-2], y_vals[-1], self.y_last_direction)
             return False
 
-        # check both x_vals and y_vals for monotonic changes
-        if check_for_monotonic_change(x_vals[-3], x_vals[-2], x_vals[-1]):
-            self.x_mono_list.append(len(x_vals) - 2)
+        if len(x_vals) == len(y_vals) and len(x_vals) > 2:
 
-        if check_for_monotonic_change(y_vals[-3], y_vals[-2], y_vals[-1]):
-            self.y_mono_list.append(len(y_vals) - 2)
+            x_current_direction = get_current_direction(
+                x_vals[-2], x_vals[-1], self.x_last_direction)
+            y_current_direction = get_current_direction(
+                y_vals[-2], y_vals[-1], self.y_last_direction)
 
-        # This needs to be replaced with spearframe implementation
-        return len(self.x_mono_list) > 0 and len(self.y_mono_list) > 0
+            if self.x_last_direction != x_current_direction \
+                    and self.x_last_direction != 0:
+                self.x_mono_list.append(len(x_vals) - 2)
+            if self.y_last_direction != y_current_direction \
+                    and self.y_last_direction != 0:
+                self.y_mono_list.append(len(y_vals) - 2)
+
+            self.x_last_direction = x_current_direction
+            self.y_last_direction = y_current_direction
+
+            return len(self.x_mono_list) > 0 and len(self.y_mono_list) > 0
 
     def __generate_frame_from_values(self, x_vals, y_vals):
 
@@ -73,9 +98,11 @@ class SpearframeRelationship(Relationship):
                               y_vals[previous_index:mono_change_index])[0])
                 previous_index = mono_change_index
 
+        # Reset values..
         self.x_mono_list.clear()
         self.y_mono_list.clear()
-
+        self.x_last_direction = 0
+        self.y_last_direction = 0
         return frame
 
     def on_new_value(self, value, id_of_var):
@@ -106,16 +133,25 @@ class SpearframeRelationship(Relationship):
             self._push_to_subscribers(generate_association(self.frames))
 
 
-def check_for_monotonic_change(x, y, z):
+def get_current_direction(x, y, last):
     """
-    Determines whether or not a change in direction as x => y => z has
-    occurred. Returns True if a change has occurred
+    Determines whether or not a change in direction
+    of two points and last direction.
+    Returns last if a change has not occurred.
+    Returns 1 if a change has occurred and last is not 1
+    Returns -1 if a change has occurred and last is not -1
     :param x:
     :param y:
-    :param z:
+    :param last:
     :return:
     """
-    return ((y - x) / abs(y - x)) != ((z - y) / abs(z - y))
+    if x == y:
+        return last
+
+    if y-x > 0:
+        return 1
+
+    return -1
 
 
 def generate_association(frames):
@@ -124,10 +160,9 @@ def generate_association(frames):
     variables are associated with one another given a list of non empty
     Frame objects
 
-    :rtype : float
     :type frames: list:Frame
     """
-    return sum(
+    gen_assoc = sum(
         list(
             map(
                 lambda x: x.get_total_time() * abs(x.get_final_correlation()),
@@ -135,3 +170,5 @@ def generate_association(frames):
             )
         )
     ) / sum(list(map(lambda x: x.get_total_time(), frames)))
+
+    return 0 if math.isnan(gen_assoc) else gen_assoc
