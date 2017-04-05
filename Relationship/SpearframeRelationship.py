@@ -47,25 +47,26 @@ class SpearframeRelationship(Relationship):
 
     def __should_generate_new_frame(self, x_vals, y_vals):
 
-        if len(x_vals) > 1 and len(y_vals) > 1:
+        if len(x_vals) == 2 and len(y_vals) == 2:
+            self.x_last_direction = get_current_direction(x_vals[-2], x_vals[-1], self.x_last_direction)
+            self.y_last_direction = get_current_direction(y_vals[-2], y_vals[-1], self.y_last_direction)
+            return False
+
+        if len(x_vals) == len(y_vals) and len(x_vals) > 2:
 
             x_current_direction = get_current_direction(x_vals[-2], x_vals[-1], self.x_last_direction)
             y_current_direction = get_current_direction(y_vals[-2], y_vals[-1], self.y_last_direction)
 
-            # only generate
-            if len(x_vals) == len(y_vals) and len(x_vals) > 2:
-                if self.x_last_direction != x_current_direction and self.x_last_direction != 0:
-                    self.x_mono_list.append(len(x_vals) - 2)
-                if self.y_last_direction != y_current_direction and self.y_last_direction != 0:
-                    self.y_mono_list.append(len(y_vals) - 2)
-
+            if self.x_last_direction != x_current_direction and self.x_last_direction != 0:
+                self.x_mono_list.append(len(x_vals) - 2)
+            if self.y_last_direction != y_current_direction and self.y_last_direction != 0:
+                self.y_mono_list.append(len(y_vals) - 2)
 
             self.x_last_direction = x_current_direction
             self.y_last_direction = y_current_direction
 
             return len(self.x_mono_list) > 0 and len(self.y_mono_list) > 0
 
-        return False
 
     def __generate_frame_from_values(self, x_vals, y_vals):
 
@@ -135,7 +136,7 @@ def get_current_direction(x, y, last):
     if x == y:
         return last
 
-    if x-y > 0:
+    if y-x > 0:
         return 1
 
     return -1
