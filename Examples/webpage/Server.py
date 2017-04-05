@@ -7,7 +7,7 @@ from flask_socketio import SocketIO
 from Sensor.Sensor import Sensor
 from Snapper.Manager import Manager
 
-from Examples.webpage.Subscriber import Subscriber
+
 
 
 app = Flask(__name__, static_folder='dist', static_url_path='')
