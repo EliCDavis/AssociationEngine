@@ -2,6 +2,8 @@ from scipy.stats import spearmanr
 from Relationship.Relationship import Relationship
 from Relationship.Frame import Frame
 import sqlite3
+import math
+
 
 class SpearframeRelationship(Relationship):
     """Home grown implementation for determining associtations between sensors
@@ -18,13 +20,14 @@ class SpearframeRelationship(Relationship):
         :type sensor_x: Variable
         """
 
-        # The current aggregation of veriable values before a new frame has
+        # The current aggregation of variable values before a new frame has
         # been generated
         self.current_iteration = {sensor_x.get_uuid(): [],
                                   sensor_y.get_uuid(): []}
 
         self.connection = sqlite3.connect("spearframe.db")
-        #self.connection.execute("create table if not exists frames (relationshipId typ1, frameValue, colN typN)")
+        # self.connection.execute("create table if not
+        # exists frames (relationshipId typ1, frameValue, colN typN)")
 
         # Create list for keeping up with all previous frames computed
         self.frames = []
@@ -48,25 +51,30 @@ class SpearframeRelationship(Relationship):
     def __should_generate_new_frame(self, x_vals, y_vals):
 
         if len(x_vals) == 2 and len(y_vals) == 2:
-            self.x_last_direction = get_current_direction(x_vals[-2], x_vals[-1], self.x_last_direction)
-            self.y_last_direction = get_current_direction(y_vals[-2], y_vals[-1], self.y_last_direction)
+            self.x_last_direction = get_current_direction(
+                x_vals[-2], x_vals[-1], self.x_last_direction)
+            self.y_last_direction = get_current_direction(
+                y_vals[-2], y_vals[-1], self.y_last_direction)
             return False
 
         if len(x_vals) == len(y_vals) and len(x_vals) > 2:
 
-            x_current_direction = get_current_direction(x_vals[-2], x_vals[-1], self.x_last_direction)
-            y_current_direction = get_current_direction(y_vals[-2], y_vals[-1], self.y_last_direction)
+            x_current_direction = get_current_direction(
+                x_vals[-2], x_vals[-1], self.x_last_direction)
+            y_current_direction = get_current_direction(
+                y_vals[-2], y_vals[-1], self.y_last_direction)
 
-            if self.x_last_direction != x_current_direction and self.x_last_direction != 0:
+            if self.x_last_direction != x_current_direction \
+                    and self.x_last_direction != 0:
                 self.x_mono_list.append(len(x_vals) - 2)
-            if self.y_last_direction != y_current_direction and self.y_last_direction != 0:
+            if self.y_last_direction != y_current_direction \
+                    and self.y_last_direction != 0:
                 self.y_mono_list.append(len(y_vals) - 2)
 
             self.x_last_direction = x_current_direction
             self.y_last_direction = y_current_direction
 
             return len(self.x_mono_list) > 0 and len(self.y_mono_list) > 0
-
 
     def __generate_frame_from_values(self, x_vals, y_vals):
 
@@ -126,11 +134,14 @@ class SpearframeRelationship(Relationship):
 
 def get_current_direction(x, y, last):
     """
-    Determines whether or not a change in direction as x => y => z has
-    occurred. Returns True if a change has occurred
+    Determines whether or not a change in direction
+    of two points and last direction.
+    Returns last if a change has not occurred.
+    Returns 1 if a change has occurred and last is not 1
+    Returns -1 if a change has occurred and last is not -1
     :param x:
     :param y:
-    :param z:
+    :param last:
     :return:
     """
     if x == y:
@@ -150,7 +161,7 @@ def generate_association(frames):
 
     :type frames: list:Frame
     """
-    return sum(
+    gen_assoc = sum(
         list(
             map(
                 lambda x: x.get_total_time() * abs(x.get_final_correlation()),
@@ -158,3 +169,5 @@ def generate_association(frames):
             )
         )
     ) / sum(list(map(lambda x: x.get_total_time(), frames)))
+
+    return 0 if math.isnan(gen_assoc) else gen_assoc
