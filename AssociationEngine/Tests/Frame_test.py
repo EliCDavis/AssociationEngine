@@ -1,5 +1,6 @@
-from Relationship.Frame import Frame
 import pytest
+
+from AssociationEngine.Relationship.Frame import Frame
 
 
 def test_should_not_allow_corr_greater_than_1():

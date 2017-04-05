@@ -6,7 +6,7 @@ README = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'README.md')
 
 setup(
     name="association_engine",
-    version="0.1.0",
+    version="0.1.2",
     packages=find_packages(),
     author="Senior Design Team MSU",
     author_email="ecd157@msstate.edu",
@@ -18,5 +18,9 @@ setup(
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
         "License :: OSI Approved :: MIT License",
+    ],
+    install_requires=[
+        "numpy>=1.12.0,<2.0.0",
+        "scipy>=0.18.1,<0.19.0"
     ],
 )

@@ -1,6 +1,7 @@
 from scipy.stats import spearmanr
-from Relationship.Relationship import Relationship
-from Relationship.Frame import Frame
+
+from AssociationEngine.Relationship.Frame import Frame
+from AssociationEngine.Relationship.Relationship import Relationship
 
 
 class SpearframeRelationship(Relationship):

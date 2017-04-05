@@ -1,8 +1,9 @@
 import math
 
-from Relationship.SpearframeRelationship import\
+from AssociationEngine.Relationship.Variable import Variable
+
+from AssociationEngine.Relationship.SpearframeRelationship import \
     SpearframeRelationship, check_for_monotonic_change
-from Relationship.Variable import Variable
 
 
 def test_should_initialize_empty_frames():

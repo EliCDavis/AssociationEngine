@@ -1,7 +1,9 @@
-from Sensor.Sensor import Sensor
-from Snapper.Snapper import Snapper
-from Snapper.Manager import Manager
 from unittest.mock import MagicMock
+
+from AssociationEngine.Snapper.Manager import Manager
+from AssociationEngine.Snapper.Snapper import Snapper
+
+from AssociationEngine.Sensor.Sensor import Sensor
 
 
 def test_should_have_sensors_field_as_empty_list_on_init():
