@@ -75,3 +75,17 @@ def test_should_return_values_in_range(rel_25, rel_50, rel_75):
         association_matrix.get_relationships_by_value_range(min_val, max_val)
     for key, value in sensor_pairs_in_range.items():
         assert min_val <= value <= max_val
+
+
+def test_should_return_requested_relationship():
+    Rxy = Relationship(Variable(), Variable())
+    Rwz = Relationship(Variable(), Variable())
+    Am = AssociationMatrix()
+    Am.add_relationship(Rxy)
+    Am.add_relationship(Rwz)
+
+    a = Am.get_relationship_from_sensors(Rxy.sensor_x, Rxy.sensor_y)
+    assert a == Rxy
+
+    b = Am.get_relationship_from_sensors(Rwz.sensor_x, Rwz.sensor_y)
+    assert b == Rwz
