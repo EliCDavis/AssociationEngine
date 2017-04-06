@@ -2,7 +2,7 @@ from Relationship.Relationship import Relationship
 from Examples.webpage.Server import update_relationship
 
 
-class Subscriber:
+class Relationship_Subscriber:
     def __init__(self, sensor_x, sensor_y):
         self.relationship = Relationship(sensor_x, sensor_y)
         self.relationship.subscribe(self)
