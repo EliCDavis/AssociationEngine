@@ -31,7 +31,7 @@ def socketio():
 def client_connected():
     print("New Connection")
     for uuid in map(lambda sensor: sensor.uuid, AEManager.sensors):
-        io.emit("sensor added", json.dumps(str(uuid)))
+        io.emit("sensor added", json.dumps(str(uuid)),broadcast = False)
 
 
 def update_relationship(sensor_x, sensor_y, value):
