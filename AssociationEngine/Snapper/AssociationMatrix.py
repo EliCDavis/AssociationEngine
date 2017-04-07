@@ -32,3 +32,9 @@ class AssociationMatrix:
             if minvalue <= value.get_correlation_coefficient() <= maxvalue:
                 sensor_pairs[key] = value.get_correlation_coefficient()
         return sensor_pairs
+
+    def get_relationship_from_sensors(self, sensor1, sensor2):
+        a = (sensor1.get_uuid(), sensor2.get_uuid())
+        key = frozenset(a)
+
+        return self.relationships[key]

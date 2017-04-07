@@ -90,3 +90,6 @@ class Manager:
             variable = self.route_map[sensorID]
             value = snapshot[sensorID]
             variable.on_data(value)
+
+    def get_relationship_from_sensors(self, sensor1, sensor2):
+        return self.matrix.get_relationship_from_sensors(sensor1, sensor2)

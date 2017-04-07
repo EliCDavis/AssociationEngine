@@ -96,3 +96,15 @@ def test_get_relationships_by_value_range():
     manager.get_relationships_by_value_range(0.5, 1)
 
     manager.matrix.get_relationships_by_value_range.assert_called_with(0.5, 1)
+
+
+def test_get_relationship_from_sensors():
+    manager = Manager()
+    sensor1 = Sensor()
+    sensor2 = Sensor()
+
+    manager.matrix.get_relationship_from_sensors = MagicMock()
+    manager.get_relationship_from_sensors(sensor1, sensor2)
+
+    manager.matrix.get_relationship_from_sensors.assert_called_with(sensor1,
+                                                                    sensor2)
