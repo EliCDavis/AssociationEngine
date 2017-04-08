@@ -10,7 +10,7 @@ def get_manager_and_sensor_data_from_cvs(filename):
     with open(filename, newline='') as csvfile:
         csvreader = csv.reader(csvfile)
         for row in csvreader:
-            sensors_data.append(row)
+            sensors_data.append(list(map(int, row)))
 
     manager = Manager()
     for _ in range(len(sensors_data)):
@@ -28,6 +28,9 @@ def publish_all_sensors(manager, sensors_data):
 
 if __name__ == '__main__':
     manager, sensors_data = get_manager_and_sensor_data_from_cvs("test.csv")
-    print(manager.get_matrix().get_value_matrix())
-    publish_all_sensors(manager, sensors_data)
-    print(manager.get_matrix().get_value_matrix())
+    while True:
+        try:
+            print(manager.get_value_matrix())
+            publish_all_sensors(manager, sensors_data)
+        except IndexError:
+            break
