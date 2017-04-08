@@ -4,4 +4,4 @@ import math
 
 class Cosine(Sensor):
     def tick(self, time):
-        self.Publish(math.cos(time))
+        self.publish(math.cos(time))

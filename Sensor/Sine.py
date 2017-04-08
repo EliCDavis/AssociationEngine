@@ -4,4 +4,4 @@ import math
 
 class Sine(Sensor):
     def tick(self, time):
-        self.Publish(math.sin(time))
+        self.publish(math.sin(time))

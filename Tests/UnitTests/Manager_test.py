@@ -75,3 +75,35 @@ def test_push_snapshot():
 
     variable1.on_data.assert_called_with(1)
     variable2.on_data.assert_called_with(2)
+
+
+def test_get_value_matrix():
+    manager = Manager()
+
+    manager.matrix.get_value_matrix = MagicMock()
+
+    manager.get_value_matrix()
+
+    manager.matrix.get_value_matrix.assert_called_with()
+
+
+def test_get_relationships_by_value_range():
+    manager = Manager()
+
+    manager.matrix.get_relationships_by_value_range = MagicMock()
+
+    manager.get_relationships_by_value_range(0.5, 1)
+
+    manager.matrix.get_relationships_by_value_range.assert_called_with(0.5, 1)
+
+
+def test_get_relationship_from_sensors():
+    manager = Manager()
+    sensor1 = Sensor()
+    sensor2 = Sensor()
+
+    manager.matrix.get_relationship_from_sensors = MagicMock()
+    manager.get_relationship_from_sensors(sensor1, sensor2)
+
+    manager.matrix.get_relationship_from_sensors.assert_called_with(sensor1,
+                                                                    sensor2)

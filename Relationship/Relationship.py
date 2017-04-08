@@ -45,6 +45,9 @@ class Relationship:
     def get_last_pushed_value(self):
         return self._last_pushed_value
 
+    def get_value_between_times(self):
+        raise NotImplementedError("You should never see this")
+
     def subscribe(self, subscriber):
         """Will add the subscriber to internal list for pushing new data
 
