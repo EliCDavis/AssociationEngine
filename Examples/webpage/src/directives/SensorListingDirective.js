@@ -11,9 +11,10 @@ function SensorListingDirective() {
 
             self.nodes = [];
 
-            GraphService.Nodes$.safeApply($scope, function(nodes) {
-                self.nodes = nodes;
-            }).subscribe();
+            GraphService.Nodes$
+                .safeApply($scope, function(nodes) {
+                    self.nodes = nodes;
+                }).subscribe();
 
 
         }

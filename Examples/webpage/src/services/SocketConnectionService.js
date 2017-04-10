@@ -1,19 +1,31 @@
+var SocketMessageType = require('../shared/SocketMessageType');
+
 module.exports = SocketConnectionService;
 
 /*
  * @ngInject
  */
 function SocketConnectionService() {
+
     var self = this;
 
-    var socket = io.connect('http://localhost:5000/');
-    socket.on('connect', function () {
-        socket.on('message', function (msg) {
-            console.log('Got Message: ' + msg);
+    var _socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+    self.server$ = {};
+
+    var _addClientMessageStream = function(messageType) {
+
+        var newStream = new Rx.ReplaySubject(1);
+
+        _socket.on(messageType, function(message) {
+            newStream.onNext(message);
         });
 
-        socket.on('sensor added', function (sensor) {
-            console.log("sensor added: " + sensor);
-        });
-    });
+        self.server$[messageType] = newStream;
+    }
+
+    for (var messageType in SocketMessageType) {
+        _addClientMessageStream(SocketMessageType[messageType]);
+    }
+
 }

@@ -23,5 +23,5 @@
  */
 
 var app = require("angular").module('App');
-app.service('GraphService', require('./GraphService'));
 app.service('SocketConnectionService', require('./SocketConnectionService'));
+app.service('GraphService', require('./GraphService'));
