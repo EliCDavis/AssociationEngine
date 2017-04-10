@@ -1,9 +1,10 @@
-from Snapper.Manager import Manager
-from Snapper.Snapper import Snapper
-from Snapper.AssociationMatrix import AssociationMatrix
-from Sensor.Sensor import Sensor
-from Relationship.Variable import Variable
 from unittest.mock import MagicMock
+
+from AssociationEngine.Relationship.Variable import Variable
+from AssociationEngine.Sensor.Sensor import Sensor
+from AssociationEngine.Snapper.Manager import Manager
+from AssociationEngine.Snapper.Snapper import Snapper
+from AssociationEngine.Snapper.AssociationMatrix import AssociationMatrix
 
 
 def test_should_initialize_snapper_and_matrix():

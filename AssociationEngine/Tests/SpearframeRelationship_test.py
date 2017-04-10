@@ -1,7 +1,8 @@
 import math
 
-from Relationship.SpearframeRelationship import SpearframeRelationship
-from Relationship.Variable import Variable
+from AssociationEngine.Relationship.Variable import Variable
+from AssociationEngine.Relationship.SpearframeRelationship import \
+    SpearframeRelationship
 
 
 def test_should_initialize_empty_frames():

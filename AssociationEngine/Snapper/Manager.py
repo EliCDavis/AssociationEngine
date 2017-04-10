@@ -1,7 +1,9 @@
-from Snapper.Snapper import Snapper
-from Snapper.AssociationMatrix import AssociationMatrix
-from Relationship.Variable import Variable
-from Relationship.SpearframeRelationship import SpearframeRelationship
+from AssociationEngine.Relationship.SpearframeRelationship \
+    import SpearframeRelationship
+from AssociationEngine.Relationship.Variable import Variable
+from AssociationEngine.Snapper.Snapper import Snapper
+
+from AssociationEngine.Snapper.AssociationMatrix import AssociationMatrix
 
 
 class Manager:

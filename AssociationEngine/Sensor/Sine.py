@@ -1,5 +1,6 @@
-from Sensor.Sensor import Sensor
 import math
+
+from AssociationEngine.Sensor.Sensor import Sensor
 
 
 class Sine(Sensor):
