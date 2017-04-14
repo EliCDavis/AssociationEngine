@@ -97,6 +97,22 @@ def test_should_generate_and_return_snapshot():
     assert round(snapshot[sensor_b.uuid] - 3, 5) == 0
 
 
+def test_should_use_none_for_sensors_not_pushing():
+    snapper = Snapper()
+    sensor_a = Sensor()
+    snapper.add_sensor(sensor_a)
+    sensor_b = Sensor()
+    snapper.add_sensor(sensor_b)
+    sensor_b.publish(3)
+
+    snapshot = snapper.get_snapshot()
+
+    assert sensor_a.uuid in snapshot
+
+    assert snapshot[sensor_a.uuid] is None
+    assert round(snapshot[sensor_b.uuid] - 3, 5) == 0
+
+
 def test_aggregation_averaging():
     snapper = Snapper()
     sensor_a = Sensor()

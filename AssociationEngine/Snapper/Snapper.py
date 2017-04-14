@@ -34,7 +34,7 @@ class Snapper:
             self.dataBuffer[sensor.uuid] = [data]
 
         elif timestamp >= self.windowStart:
-            if sensor.uuid not in self.dataBuffer:
+            if self.dataBuffer[sensor.uuid] is None:
                 self.dataBuffer[sensor.uuid] = [data]
             else:
                 self.dataBuffer[sensor.uuid].append(data)
@@ -46,6 +46,7 @@ class Snapper:
         :return:
         """
         self.sensors.append(sensor)
+        self.dataBuffer[sensor.uuid] = None
         sensor.set_snapper_callback(self)
 
     def remove_sensor(self, sensor):
@@ -68,14 +69,15 @@ class Snapper:
 
         # Construct actual snapshot
         for each in self.sensors:
-            if each.uuid not in self.dataBuffer:
-                self.dataBuffer[each.uuid] = None
-            else:
+            if self.dataBuffer[each.uuid] is not None:
                 self.snapshot[each.uuid] = sum(self.dataBuffer[each.uuid]) / \
                                            len(self.dataBuffer[each.uuid])
+            else:
+                self.snapshot[each.uuid] = None
+            # Clean buffer as we go
+            self.dataBuffer[each.uuid] = None
 
         # Clean buffer and move window for next snapshot operation
-        self.dataBuffer = {}
         self.windowStart = self.windowEnd
         self.windowEnd = self.windowStart + self.timeWindow - 1
 
