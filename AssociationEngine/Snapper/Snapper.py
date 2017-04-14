@@ -5,7 +5,7 @@ class Snapper:
         self.snapshot = {}
         self.manager = manager
 
-    def on_data(self, sensor, data):
+    def on_data(self, sensor, data, timestamp=None):
         """
         This function receives data from a sensor and stores it for use in
         snapshot building.
