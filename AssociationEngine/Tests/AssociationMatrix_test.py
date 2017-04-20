@@ -2,7 +2,8 @@ import pytest
 from unittest.mock import MagicMock
 
 from AssociationEngine.Relationship.Relationship import Relationship
-from AssociationEngine.Relationship.SpearframeRelationship import SpearframeRelationship
+from AssociationEngine.Relationship.SpearframeRelationship\
+    import SpearframeRelationship
 from AssociationEngine.Relationship.Variable import Variable
 
 from AssociationEngine.Snapper.AssociationMatrix import AssociationMatrix
