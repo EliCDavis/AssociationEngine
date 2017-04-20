@@ -17,7 +17,7 @@ def test_should_receive_data_from_attached_sensor():
     snapper.add_sensor(sensor)
     sensor.publish(2)
 
-    assert snapper.dataBuffer[sensor.uuid] is 2
+    assert snapper.dataBuffer[sensor.uuid] == [2]
 
 
 def test_should_receive_data_from_multiple_sensors():
@@ -29,7 +29,7 @@ def test_should_receive_data_from_multiple_sensors():
     snapper.add_sensor(sensor2)
     sensor2.publish(3)
 
-    assert snapper.dataBuffer == {sensor1.uuid: 2, sensor2.uuid: 3}
+    assert snapper.dataBuffer == {sensor1.uuid: [2], sensor2.uuid: [3]}
     assert snapper.get_snapshot() == {sensor1.uuid: 2, sensor2.uuid: 3}
 
 
@@ -55,10 +55,12 @@ def test_should_forward_snapshot_once_data_complete():
     snapper = Snapper(manager)
     sensor1 = Sensor()
     snapper.add_sensor(sensor1)
-    sensor1.publish(2)
+    sensor1.publish(2, 1)
     sensor2 = Sensor()
     snapper.add_sensor(sensor2)
-    sensor2.publish(3)
+    sensor2.publish(3, 1)
+    # Force a snapshot publish by pushing value with time past window
+    sensor2.publish(3, 11)
 
     manager.on_data.assert_called_with({sensor1.uuid: 2, sensor2.uuid: 3})
 
@@ -91,5 +93,78 @@ def test_should_generate_and_return_snapshot():
 
     snapshot = snapper.get_snapshot()
 
-    assert snapshot[sensor_a.uuid] is 1
-    assert snapshot[sensor_b.uuid] is 3
+    assert round(snapshot[sensor_a.uuid] - 1, 5) == 0
+    assert round(snapshot[sensor_b.uuid] - 3, 5) == 0
+
+
+def test_should_use_none_for_sensors_not_pushing():
+    snapper = Snapper()
+    sensor_a = Sensor()
+    snapper.add_sensor(sensor_a)
+    sensor_b = Sensor()
+    snapper.add_sensor(sensor_b)
+    sensor_b.publish(3)
+
+    snapshot = snapper.get_snapshot()
+
+    assert sensor_a.uuid in snapshot
+
+    assert snapshot[sensor_a.uuid] is None
+    assert round(snapshot[sensor_b.uuid] - 3, 5) == 0
+
+
+def test_aggregation_averaging():
+    snapper = Snapper()
+    sensor_a = Sensor()
+    snapper.add_sensor(sensor_a)
+    sensor_b = Sensor()
+    snapper.add_sensor(sensor_b)
+
+    sensor_a.publish(1, 1)
+    sensor_a.publish(5, 2)
+    sensor_a.publish(6, 2)
+    sensor_a.publish(4, 2)
+
+    sensor_b.publish(3, 2)
+    sensor_b.publish(7, 2)
+    sensor_b.publish(2, 2)
+    sensor_b.publish(4, 2)
+    sensor_b.publish(5, 2)
+    sensor_b.publish(2, 2)
+    sensor_b.publish(6, 2)
+    sensor_b.publish(9, 2)
+
+    snapshot = snapper.get_snapshot()
+
+    assert round(snapshot[sensor_a.uuid] - 4, 5) == 0
+    assert round(snapshot[sensor_b.uuid] - 4.75, 5) == 0
+
+
+def test_should_generate_and_return_multiple_snapshots_correctly():
+    snapper = Snapper()
+    sensor_a = Sensor()
+    snapper.add_sensor(sensor_a)
+    sensor_a.publish(1, 1)
+    sensor_a.publish(5, 6)
+    sensor_b = Sensor()
+    snapper.add_sensor(sensor_b)
+    sensor_b.publish(3, 7)
+    sensor_b.publish(9, 8)
+
+    snapshot1 = snapper.get_snapshot()
+
+    assert round(snapshot1[sensor_a.uuid] - 3, 5) == 0
+    assert round(snapshot1[sensor_b.uuid] - 6, 5) == 0
+
+    sensor_a.publish(5, 11)
+    sensor_a.publish(10, 12)
+    sensor_a.publish(15, 13)
+    sensor_b.publish(6, 13)
+    sensor_b.publish(12, 14)
+    sensor_b.publish(2, 15)
+    sensor_b.publish(30, 16)
+
+    snapshot2 = snapper.get_snapshot()
+
+    assert round(snapshot2[sensor_a.uuid] - 10, 5) == 0
+    assert round(snapshot2[sensor_b.uuid] - 12.5, 5) == 0
