@@ -46,6 +46,7 @@ tmtagsHistory
 lastfailed
 association_engine.egg-info
 
-Examples/webpage/.vscode/
-Examples/webpage/dist/
-Examples/webpage/node_modules/
+AssociationEngine/Examples/webpage/.vscode/
+AssociationEngine/Examples/webpage/dist/
+AssociationEngine/Examples/webpage/node_modules/
+.vscode/
