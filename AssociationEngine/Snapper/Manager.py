@@ -1,7 +1,9 @@
-from Snapper.Snapper import Snapper
-from Snapper.AssociationMatrix import AssociationMatrix
-from Relationship.Variable import Variable
-from Relationship.SpearframeRelationship import SpearframeRelationship
+from AssociationEngine.Relationship.SpearframeRelationship \
+    import SpearframeRelationship
+from AssociationEngine.Relationship.Variable import Variable
+from AssociationEngine.Snapper.Snapper import Snapper
+
+from AssociationEngine.Snapper.AssociationMatrix import AssociationMatrix
 
 
 class Manager:
@@ -46,7 +48,7 @@ class Manager:
             if var == variable:
                 pass
             else:
-                relationship = SpearframeRelationship(Variable, var)
+                relationship = SpearframeRelationship(variable, var)
                 self.matrix.remove_relationship(relationship)
 
         self.snapper.remove_sensor(sensor)
@@ -61,6 +63,22 @@ class Manager:
         """
         return self.matrix
 
+    def get_value_matrix(self):
+        """
+        Returns the underlying matrix on demand.
+
+        :return:
+        """
+        return self.matrix.get_value_matrix()
+
+    def get_relationships_by_value_range(self, minvalue, maxvalue):
+        """
+        Returns the underlying matrix on demand.
+
+        :return:
+        """
+        return self.matrix.get_relationships_by_value_range(minvalue, maxvalue)
+
     def on_data(self, snapshot):
         """
         Routes all data from incoming snapshot to the appropriate variables.
@@ -72,3 +90,6 @@ class Manager:
             variable = self.route_map[sensorID]
             value = snapshot[sensorID]
             variable.on_data(value)
+
+    def get_relationship_from_sensors(self, sensor1, sensor2):
+        return self.matrix.get_relationship_from_sensors(sensor1, sensor2)
