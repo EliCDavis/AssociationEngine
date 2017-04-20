@@ -37,16 +37,19 @@ class Relationship:
         return self.uuid
 
     def on_new_value(self, value, id_of_var):
-        return
+        raise NotImplementedError("Underlying algorithm should implement this")
 
     def get_correlation_coefficient(self):
-        return
+        raise NotImplementedError("Underlying algorithm should implement this")
+
+    def clean_up(self):
+        raise NotImplementedError("Underlying algorithm should implement this")
 
     def get_last_pushed_value(self):
         return self._last_pushed_value
 
-    def get_value_between_times(self):
-        raise NotImplementedError("You should never see this")
+    def get_value_between_times(self, x, y):
+        raise NotImplementedError("Underlying algorithm should implement this")
 
     def subscribe(self, subscriber):
         """Will add the subscriber to internal list for pushing new data
