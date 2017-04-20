@@ -8,7 +8,7 @@ from AssociationEngine.Snapper.AssociationMatrix import AssociationMatrix
 
 class Manager:
 
-        def __init__(self):
+    def __init__(self):
         self.sensors = []
         self.route_map = {}
         self.variables = []
