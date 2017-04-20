@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import MagicMock
 
 from AssociationEngine.Relationship.Relationship import Relationship
+from AssociationEngine.Relationship.SpearframeRelationship import SpearframeRelationship
 from AssociationEngine.Relationship.Variable import Variable
 
 from AssociationEngine.Snapper.AssociationMatrix import AssociationMatrix
@@ -55,8 +56,8 @@ def test_should_remove_specified_relationship():
 
 
 def test_should_return_whole_dict():
-    Rxy = Relationship(Variable(), Variable())
-    Rwz = Relationship(Variable(), Variable())
+    Rxy = SpearframeRelationship(Variable(), Variable())
+    Rwz = SpearframeRelationship(Variable(), Variable())
     Am = AssociationMatrix()
     Am.add_relationship(Rxy)
     Am.add_relationship(Rwz)

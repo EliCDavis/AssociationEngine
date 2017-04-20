@@ -22,7 +22,7 @@ def test_should_should_throw_error_trying_get_new_value_from_variables():
 
 def test_should_should_throw_error_trying_to_get_value_between_times():
     with pytest.raises(NotImplementedError) as excinfo:
-        Relationship(Variable(), Variable()).get_value_between_times()
+        Relationship(Variable(), Variable()).get_value_between_times(1, 2)
     assert "Underlying algorithm should implement this" in str(excinfo.value)
 
 
