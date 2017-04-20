@@ -68,6 +68,8 @@ class Snapper:
         """
 
         # Construct actual snapshot
+        self.snapshot["start"] = self.windowStart
+        self.snapshot["end"] = self.windowEnd
         for each in self.sensors:
             if self.dataBuffer[each.uuid] is not None:
                 self.snapshot[each.uuid] = sum(self.dataBuffer[each.uuid]) / \
