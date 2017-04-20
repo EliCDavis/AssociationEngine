@@ -45,7 +45,7 @@ class SpearframeRelationship(Relationship):
         # sensor_y
         self.y_mono_list = []
 
-    def get_value_between_times(self):
+    def get_value_between_times(self, x, y):
 
         return 0
 
@@ -104,6 +104,9 @@ class SpearframeRelationship(Relationship):
         self.x_last_direction = 0
         self.y_last_direction = 0
         return frame
+
+    def get_correlation_coefficient(self):
+        return self.get_last_pushed_value()
 
     def on_new_value(self, value, id_of_var):
         """
