@@ -4,8 +4,9 @@ from threading import Thread
 from flask import Flask, send_file
 from flask_socketio import SocketIO
 
-from Sensor.Sensor import Sensor
-from Snapper.Manager import Manager
+from AssociationEngine.Sensor.Cosine import Cosine
+from AssociationEngine.Sensor.Sine import Sine
+from AssociationEngine.Snapper.Manager import Manager
 
 app = Flask(__name__, static_folder='dist', static_url_path='')
 io = SocketIO(app)
@@ -19,6 +20,7 @@ def index():
     if thread is None:
         thread = Thread(target=setup_Manager)
         thread.start()
+        
     return app.send_static_file('index.html')
 
 
@@ -42,8 +44,8 @@ def update_relationship(sensor_x, sensor_y, value):
 
 def setup_Manager():
     global AEManager
-    s1 = Sensor()
-    AEManager.add_sensor(s1)
+    AEManager.add_sensor(Sine())
+    AEManager.add_sensor(Cosine())
     print("setup done")
 
 
