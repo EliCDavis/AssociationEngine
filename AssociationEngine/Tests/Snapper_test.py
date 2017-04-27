@@ -11,6 +11,18 @@ def test_should_have_sensors_field_as_empty_list_on_init():
     assert snapper.sensors == []
 
 
+def test_should_change_window_size():
+    snapper = Snapper()
+
+    snapper.set_window_size(20)
+
+    assert snapper.timeWindow == 20
+
+    snapper.set_window_size(5.00)
+
+    assert round(snapper.timeWindow - 5.00, 5) == 0.0
+
+
 def test_should_receive_data_from_attached_sensor():
     snapper = Snapper()
     sensor = Sensor()
@@ -182,3 +194,36 @@ def test_should_generate_and_return_multiple_snapshots_correctly():
 
     assert round(snapshot2[sensor_a.uuid] - 10, 5) == 0
     assert round(snapshot2[sensor_b.uuid] - 12.5, 5) == 0
+
+
+def test_should_use_changed_time_window_for_snapshot_after_change():
+    manager = Manager()
+    manager.on_data = MagicMock()
+    snapper = Snapper(manager)
+    sensor1 = Sensor()
+    snapper.add_sensor(sensor1)
+    sensor1.publish(2, 1)
+
+    # Change window size in middle of data transmission
+    snapper.set_window_size(15.0)
+
+    sensor2 = Sensor()
+    snapper.add_sensor(sensor2)
+    sensor2.publish(3, 1)
+    # Force a snapshot publish by pushing value with time past original window
+    sensor2.publish(3, 11)
+
+    # Should finish original window and push the resulting snapshot before
+    # transitioning
+    manager.on_data.assert_called_with({'start': 1, 'end': 10,
+                                        sensor1.uuid: 2, sensor2.uuid: 3})
+
+    # Push values within the new window
+    sensor1.publish(3, 15)
+    sensor2.publish(5, 16)
+
+    # Force a snapshot push by publishing out of bounds data
+    sensor1.publish(3, 26)
+
+    manager.on_data.assert_called_with({'start': 10, 'end': 24,
+                                        sensor1.uuid: 3, sensor2.uuid: 4})
