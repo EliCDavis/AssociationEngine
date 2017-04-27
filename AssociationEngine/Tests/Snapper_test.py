@@ -215,7 +215,8 @@ def test_should_use_changed_time_window_for_snapshot_after_change():
 
     # Should finish original window and push the resulting snapshot before
     # transitioning
-    manager.on_data.assert_called_with({'start': 1, 'end': 10, sensor1.uuid: 2, sensor2.uuid: 3})
+    manager.on_data.assert_called_with({'start': 1, 'end': 10,
+                                        sensor1.uuid: 2, sensor2.uuid: 3})
 
     # Push values within the new window
     sensor1.publish(3, 15)
@@ -224,4 +225,5 @@ def test_should_use_changed_time_window_for_snapshot_after_change():
     # Force a snapshot push by publishing out of bounds data
     sensor1.publish(3, 26)
 
-    manager.on_data.assert_called_with({'start': 10, 'end': 24, sensor1.uuid: 3, sensor2.uuid: 4})
+    manager.on_data.assert_called_with({'start': 10, 'end': 24,
+                                        sensor1.uuid: 3, sensor2.uuid: 4})
