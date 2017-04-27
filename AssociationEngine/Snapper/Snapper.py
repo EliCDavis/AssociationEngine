@@ -9,7 +9,8 @@ class Snapper:
         self.windowEnd = None
 
     def set_window_size(self, new_window_size):
-        # Should just set the window size and let it take effect on next snapshot
+        # Should just set the window size and let it take effect on next
+        # snapshot
         self.timeWindow = new_window_size
 
     def on_data(self, sensor, data, timestamp=None):

@@ -199,7 +199,8 @@ def test_should_use_changed_time_window_for_snapshot_after_change():
     # Force a snapshot publish by pushing value with time past original window
     sensor2.publish(3, 11)
 
-    # Should finish original window and push the resulting snapshot before transitioning
+    # Should finish original window and push the resulting snapshot before
+    # transitioning
     manager.on_data.assert_called_with({sensor1.uuid: 2, sensor2.uuid: 3})
 
     # Push values within the new window
