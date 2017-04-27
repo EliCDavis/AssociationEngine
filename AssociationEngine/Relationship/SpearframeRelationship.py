@@ -162,6 +162,24 @@ class SpearframeRelationship(Relationship):
             self._push_to_subscribers(generate_association(self.frames))
             self.__insert_frames_to_db()
 
+    def get_correlation_coefficient(self):
+        if not self.frames:
+            return self.get_last_pushed_value()
+        else:
+            current_iter_association = generate_association(self.frames)
+            current_iter_frame_count = len(self.frames)
+            total_frame_count = self.__get_total_frames()
+
+            current_iter_ratio = current_iter_frame_count / \
+                (current_iter_frame_count + total_frame_count)
+            total_iter_ratio = total_frame_count / \
+                (current_iter_frame_count + total_frame_count)
+
+            current_iter = current_iter_association * current_iter_ratio
+            total_iter = self.get_last_pushed_value() * total_iter_ratio
+
+            return current_iter + total_iter
+
     def get_value_between_times(self, start_time, end_time):
         self.db_cursor.execute(
             'SELECT * FROM relationships '
