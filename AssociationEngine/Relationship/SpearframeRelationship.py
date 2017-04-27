@@ -26,9 +26,11 @@ class SpearframeRelationship(Relationship):
         self.current_iteration = {sensor_x.get_uuid(): [],
                                   sensor_y.get_uuid(): []}
 
-        self.connection = sqlite3.connect("spearframe.db")
-        # self.connection.execute("create table if not
-        # exists frames (relationshipId typ1, frameValue, colN typN)")
+        self.db_name = "spearframe.db"
+        self.connection = sqlite3.connect(self.db_name)
+        self.db_cursor = self.connection.cursor()
+        if not self.__frame_table_exists():
+            self.__create_frame_table()
 
         # Create list for keeping up with all previous frames computed
         self.frames = []
@@ -45,9 +47,7 @@ class SpearframeRelationship(Relationship):
         # sensor_y
         self.y_mono_list = []
 
-    def get_value_between_times(self, x, y):
-
-        return 0
+        self.current_frame_start_time = None
 
     def __should_generate_new_frame(self, x_vals, y_vals):
 
@@ -79,7 +79,7 @@ class SpearframeRelationship(Relationship):
 
     def __generate_frame_from_values(self, x_vals, y_vals):
 
-        frame = Frame()
+        frame = Frame(self.current_frame_start_time)
 
         if len(self.x_mono_list) >= len(self.y_mono_list):
             previous_index = 0
@@ -146,6 +146,9 @@ class SpearframeRelationship(Relationship):
                 "Illegal id: Relationship should not have been pushed this "
                 "value")
 
+        if self.current_frame_start_time is None:
+            self.current_frame_start_time = start_time
+
         # Update our current iteration
         self.current_iteration[id_of_var].append(value)
 
@@ -157,6 +160,34 @@ class SpearframeRelationship(Relationship):
                 self.current_iteration[self.sensor_x.get_uuid()],
                 self.current_iteration[self.sensor_y.get_uuid()]))
             self._push_to_subscribers(generate_association(self.frames))
+            self.__insert_frames_to_db()
+
+    def get_value_between_times(self, start_time, end_time):
+        self.db_cursor.execute(
+            'SELECT * FROM relationships '
+            'WHERE end_time >= ? AND start_time < ?',
+            (start_time, end_time))
+
+        frames = self.db_cursor.fetchall()
+
+        summed_association = 0
+        duration = end_time - start_time
+        for frame in frames:
+            if frame['end_time'] > end_time:
+                frame_end = end_time
+            else:
+                frame_end = frame['end_time']
+            association = (frame_end - start_time) / duration
+            summed_association += association * frame['association']
+            start_time = frame_end
+
+        return summed_association
+
+    def __del__(self):
+        self.connection.close()
+
+    def clean_up(self):
+        os.remove(self.db_name)
 
 
 def get_current_direction(x, y, last):
