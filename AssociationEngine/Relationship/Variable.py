@@ -4,13 +4,12 @@ from uuid import uuid4
 class Variable:
 
     def __init__(self):
-        self.__class__ == 'Variable'
         self.subscribers = {}
         self.uuid = uuid4()
 
-    def on_data(self, snapshot):
+    def on_data(self, snapshot, start_time, end_time):
         for subscriber in self.subscribers:
-            self.subscribers[subscriber].on_new_value(snapshot, self.uuid)
+            self.subscribers[subscriber].on_new_value(snapshot, self.uuid, start_time, end_time)
 
     def get_uuid(self):
         return self.uuid

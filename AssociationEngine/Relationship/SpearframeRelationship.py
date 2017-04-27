@@ -103,12 +103,35 @@ class SpearframeRelationship(Relationship):
         self.y_mono_list.clear()
         self.x_last_direction = 0
         self.y_last_direction = 0
+        self.current_frame_start_time += frame.get_total_time()
         return frame
 
-    def get_correlation_coefficient(self):
-        return self.get_last_pushed_value()
+    def __frame_table_exists(self):
+        self.db_cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='relationships'")
+        return self.db_cursor.fetchone()
 
-    def on_new_value(self, value, id_of_var):
+    def __create_frame_table(self):
+        self.db_cursor.execute("CREATE TABLE relationships ("
+                               + "relationship_uuid TEXT, association REAL,"
+                               + " start_time INTEGER, end_time INTEGER)")
+        self.connection.commit()
+
+    def __insert_frames_to_db(self):
+        db_rows = []
+        for frame in self.frames:
+            db_rows.append((str(self.uuid), frame.get_final_correlation(),
+                            frame.get_start_time(),
+                            frame.get_start_time() + frame.get_total_time()))
+        self.db_cursor.executemany("INSERT INTO relationships VALUES (?,?,?,?)", db_rows)
+        self.connection.commit()
+        self.frames = []
+
+    def __get_total_frames(self):
+        self.db_cursor.execute("SELECT COUNT(*) FROM relationships")
+        return self.db_cursor.fetchone()
+
+    def on_new_value(self, value, id_of_var, start_time, end_time):
+
         """
         This method is called by the variables it is subscribed to, updating
         the relationship on it's newest value.
