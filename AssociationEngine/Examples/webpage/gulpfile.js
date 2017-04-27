@@ -131,13 +131,6 @@ gulp.task('watch:sass', function() {
  */
 gulp.task('default', ['build', 'watch:js', 'watch:html', 'watch:sass'], function() {
 
-    // Reload all connected browsers proxying our server when changes made to src/
-    browserSync.init({
-        server: {
-            baseDir: "dist/"
-        }
-    });
-
     return buildScript('main.js', true);
 });
 

@@ -1,5 +1,5 @@
-from Relationship.Relationship import Relationship
-from Examples.webpage.Server import update_relationship
+from AssociationEngine.Relationship.Relationship import Relationship
+from AssociationEngine.Examples.webpage.Server import update_relationship
 
 
 class Relationship_Subscriber:

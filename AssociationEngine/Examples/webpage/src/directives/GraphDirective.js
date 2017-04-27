@@ -19,6 +19,9 @@ function GraphDirective() {
             // Render most recent data.
             GraphService.Nodes$.combineLatest(GraphService.RelationValue$).subscribe(function(data) {
 
+                graph.clearNodes();
+                graph.clearLinks();
+
                 var nodesRendered = {};
 
                 // Add nodes

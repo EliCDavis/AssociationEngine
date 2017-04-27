@@ -21,7 +21,12 @@ function GraphService(SocketConnectionService) {
 
     SocketConnectionService.server$[SocketMessageType.SensorAdded]
         .scan(function(allNodes, newNode) {
-
+            for(var i=0; i<allNodes.length; i++){
+                console.log(allNodes[i], newNode)
+                if (allNodes[i].renderData.id === newNode){
+                    return allNodes;
+                }
+            }
             console.log(newNode);
 
             allNodes.push({
