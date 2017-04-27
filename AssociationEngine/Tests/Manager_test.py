@@ -7,6 +7,17 @@ from AssociationEngine.Snapper.Snapper import Snapper
 from AssociationEngine.Snapper.AssociationMatrix import AssociationMatrix
 
 
+def test_should_call_set_window_size_on_snapper():
+    manager = Manager()
+    manager.snapper.set_window_size = MagicMock()
+
+    manager.set_window_size(20.0)
+    manager.snapper.set_window_size.assert_called_with(20.0)
+
+    manager.set_window_size(30.0)
+    manager.snapper.set_window_size.assert_called_with(30.0)
+
+
 def test_should_initialize_snapper_and_matrix():
     manager = Manager()
     assert isinstance(manager.snapper, Snapper)
