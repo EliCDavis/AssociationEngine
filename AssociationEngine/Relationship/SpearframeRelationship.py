@@ -106,6 +106,8 @@ class SpearframeRelationship(Relationship):
         # Reset values..
         self.x_mono_list.clear()
         self.y_mono_list.clear()
+        self.current_iteration[self.sensor_x.get_uuid()].clear()
+        self.current_iteration[self.sensor_y.get_uuid()].clear()
         self.x_last_direction = 0
         self.y_last_direction = 0
         self.current_frame_start_time += frame.get_total_time()
@@ -186,22 +188,50 @@ class SpearframeRelationship(Relationship):
             self.__insert_frames_to_db()
 
     def get_correlation_coefficient(self):
-        if not self.frames:
+        if self.get_last_pushed_value() is None:
+            return 0.0
+        elif not self.current_iteration[self.sensor_x.get_uuid()] \
+                and not self.current_iteration[self.sensor_y.get_uuid()]:
             return self.get_last_pushed_value()
         else:
-            current_iter_association = generate_association(self.frames)
-            current_iter_frame_count = len(self.frames)
-            total_frame_count = self.__get_total_frames()
+            frame = Frame(self.current_frame_start_time)
 
-            current_iter_ratio = current_iter_frame_count / \
-                (current_iter_frame_count + total_frame_count)
-            total_iter_ratio = total_frame_count / \
-                (current_iter_frame_count + total_frame_count)
+            x_vals = self.current_iteration[self.sensor_x.get_uuid()]
+            y_vals = self.current_iteration[self.sensor_y.get_uuid()]
 
-            current_iter = current_iter_association * current_iter_ratio
-            total_iter = self.get_last_pushed_value() * total_iter_ratio
+            if len(self.x_mono_list) >= len(self.y_mono_list):
+                previous_index = 0
+                for mono_change_index in self.x_mono_list:
+                    frame.add_correlation(
+                        len(x_vals[previous_index:mono_change_index]),
+                        spearmanr(x_vals[previous_index:mono_change_index],
+                                  y_vals[previous_index:mono_change_index])[0])
+                    previous_index = mono_change_index
+            else:
+                previous_index = 0
+                for mono_change_index in self.y_mono_list:
+                    frame.add_correlation(
+                        len(x_vals[previous_index:mono_change_index]),
+                        spearmanr(x_vals[previous_index:mono_change_index],
+                                  y_vals[previous_index:mono_change_index])[0])
+                    previous_index = mono_change_index
 
-            return current_iter + total_iter
+            if frame.get_final_correlation() is not None:
+                current_iter_association = generate_association([frame])
+                current_iter_frame_count = 1
+                total_frame_count = self.__get_total_frames()
+
+                current_iter_ratio = current_iter_frame_count / \
+                    (current_iter_frame_count + total_frame_count)
+                total_iter_ratio = total_frame_count / \
+                    (current_iter_frame_count + total_frame_count)
+
+                current_iter = current_iter_association * current_iter_ratio
+                total_iter = self.get_last_pushed_value() * total_iter_ratio
+
+                return current_iter + total_iter
+            else:
+                return self.get_last_pushed_value()
 
     def get_value_between_times(self, start_time, end_time):
         con = sqlite3.connect(self.db_name)
@@ -210,7 +240,6 @@ class SpearframeRelationship(Relationship):
                 'SELECT * FROM relationships '
                 'WHERE end_time >= ? AND start_time < ?',
                 (start_time, end_time))
-        con.close()
 
         summed_association = 0
         duration = end_time - start_time
@@ -222,6 +251,8 @@ class SpearframeRelationship(Relationship):
             association = (frame_end - start_time) / duration
             summed_association += association * frame['association']
             start_time = frame_end
+
+        con.close()
 
         return summed_association
 
