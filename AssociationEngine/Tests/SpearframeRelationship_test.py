@@ -1,4 +1,6 @@
 import math
+import os
+import time
 
 from AssociationEngine.Relationship.Variable import Variable
 from AssociationEngine.Relationship.SpearframeRelationship import \
@@ -44,3 +46,25 @@ def test_should_not_return_nan():
         var2.on_data(math.sin(math.radians(degree * 100)), degree, degree+1)
 
     assert not math.isnan(rel.get_last_pushed_value())
+
+
+def test_should_create_db():
+    if os.path.exists("spearframe.db"):
+        os.remove("spearframe.db")
+
+    var1 = Variable()
+    var2 = Variable()
+    SpearframeRelationship(var1, var2)
+
+    assert os.path.exists("spearframe.db")
+
+
+def test_should_delete_db():
+    var1 = Variable()
+    var2 = Variable()
+    SpearframeRelationship(var1, var2)
+
+    if os.path.exists("spearframe.db"):
+        os.remove("spearframe.db")
+
+    assert not os.path.exists("spearframe.db")

@@ -1,9 +1,14 @@
+from uuid import uuid4
+
+import sys
 from scipy.stats import spearmanr
 from AssociationEngine.Relationship.Relationship import Relationship
 from AssociationEngine.Relationship.Frame import Frame
 import sqlite3
 import math
 import os
+
+import traceback
 
 
 class SpearframeRelationship(Relationship):
@@ -27,8 +32,13 @@ class SpearframeRelationship(Relationship):
                                   sensor_y.get_uuid(): []}
 
         self.db_name = "spearframe.db"
-        self.connection = sqlite3.connect(self.db_name)
-        self.db_cursor = self.connection.cursor()
+        # self.connection = sqlite3.connect(self.db_name)
+
+        # self.tempid = uuid4()
+        # print("\nConnection opened", self.tempid)
+        # traceback.print_stack(file=sys.stdout, limit=4)
+
+        # self.db_cursor = self.connection.cursor()
         if not self.__frame_table_exists():
             self.__create_frame_table()
 
@@ -107,14 +117,22 @@ class SpearframeRelationship(Relationship):
         return frame
 
     def __frame_table_exists(self):
-        self.db_cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='relationships'")
-        return self.db_cursor.fetchone()
+        con = sqlite3.connect(self.db_name)
+        with con:
+            cur = con.cursor()
+            exists = cur.execute("SELECT name FROM sqlite_master "
+                                 "WHERE type='table' AND name='relationships'").fetchone()
+        con.close()
+        return exists
 
     def __create_frame_table(self):
-        self.db_cursor.execute("CREATE TABLE relationships ("
-                               + "relationship_uuid TEXT, association REAL,"
-                               + " start_time INTEGER, end_time INTEGER)")
-        self.connection.commit()
+        con = sqlite3.connect(self.db_name)
+        with con:
+            cur = con.cursor()
+            cur.execute("CREATE TABLE relationships ("
+                        + "relationship_uuid TEXT, association REAL,"
+                        + " start_time INTEGER, end_time INTEGER)")
+        con.close()
 
     def __insert_frames_to_db(self):
         db_rows = []
@@ -122,13 +140,20 @@ class SpearframeRelationship(Relationship):
             db_rows.append((str(self.uuid), frame.get_final_correlation(),
                             frame.get_start_time(),
                             frame.get_start_time() + frame.get_total_time()))
-        self.db_cursor.executemany("INSERT INTO relationships VALUES (?,?,?,?)", db_rows)
-        self.connection.commit()
+        con = sqlite3.connect(self.db_name)
+        with con:
+            cur = con.cursor()
+            cur.executemany("INSERT INTO relationships VALUES (?,?,?,?)", db_rows)
+        con.close()
         self.frames = []
 
     def __get_total_frames(self):
-        self.db_cursor.execute("SELECT COUNT(*) FROM relationships")
-        return self.db_cursor.fetchone()
+        con = sqlite3.connect(self.db_name)
+        with con:
+            cur = con.cursor()
+            total = cur.execute("SELECT COUNT(*) FROM relationships").fetchone()[0]
+        con.close()
+        return total
 
     def on_new_value(self, value, id_of_var, start_time, end_time):
 
@@ -181,12 +206,13 @@ class SpearframeRelationship(Relationship):
             return current_iter + total_iter
 
     def get_value_between_times(self, start_time, end_time):
-        self.db_cursor.execute(
-            'SELECT * FROM relationships '
-            'WHERE end_time >= ? AND start_time < ?',
-            (start_time, end_time))
-
-        frames = self.db_cursor.fetchall()
+        con = sqlite3.connect(self.db_name)
+        with con:
+            frames = con.execute(
+                'SELECT * FROM relationships '
+                'WHERE end_time >= ? AND start_time < ?',
+                (start_time, end_time))
+        con.close()
 
         summed_association = 0
         duration = end_time - start_time
@@ -201,8 +227,10 @@ class SpearframeRelationship(Relationship):
 
         return summed_association
 
-    def __del__(self):
-        self.connection.close()
+    # def __del__(self):
+    #     print("Connection closed", self.tempid)
+    #     self.db_cursor.close()
+    #     self.connection.close()
 
     def clean_up(self):
         os.remove(self.db_name)
