@@ -16,7 +16,7 @@ def test_should_should_throw_error_trying_to_grab_coefficient():
 
 def test_should_should_throw_error_trying_get_new_value_from_variables():
     with pytest.raises(NotImplementedError) as excinfo:
-        Relationship(Variable(), Variable()).on_new_value(1, 1)
+        Relationship(Variable(), Variable()).on_new_value(1, 1, 0, 1)
     assert "Underlying algorithm should implement this" in str(excinfo.value)
 
 

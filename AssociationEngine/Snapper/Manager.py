@@ -15,6 +15,9 @@ class Manager:
         self.snapper = Snapper(self)
         self.matrix = AssociationMatrix()
 
+    def set_window_size(self, new_window_size):
+        self.snapper.set_window_size(new_window_size)
+
     def add_sensor(self, sensor):
         """
         This function adds a new sensor to the snapper module and generates
