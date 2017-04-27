@@ -1,9 +1,9 @@
 from scipy.stats import spearmanr
+from AssociationEngine.Relationship.Relationship import Relationship
+from AssociationEngine.Relationship.Frame import Frame
 import sqlite3
 import math
-
-from AssociationEngine.Relationship.Frame import Frame
-from AssociationEngine.Relationship.Relationship import Relationship
+import os
 
 
 class SpearframeRelationship(Relationship):
