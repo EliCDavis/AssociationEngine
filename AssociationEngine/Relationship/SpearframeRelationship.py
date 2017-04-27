@@ -1,14 +1,9 @@
-from uuid import uuid4
-
-import sys
 from scipy.stats import spearmanr
 from AssociationEngine.Relationship.Relationship import Relationship
 from AssociationEngine.Relationship.Frame import Frame
 import sqlite3
 import math
 import os
-
-import traceback
 
 
 class SpearframeRelationship(Relationship):
@@ -121,7 +116,8 @@ class SpearframeRelationship(Relationship):
         with con:
             cur = con.cursor()
             exists = cur.execute("SELECT name FROM sqlite_master "
-                                 "WHERE type='table' AND name='relationships'").fetchone()
+                                 "WHERE type='table' "
+                                 "AND name='relationships'").fetchone()
         con.close()
         return exists
 
@@ -143,7 +139,8 @@ class SpearframeRelationship(Relationship):
         con = sqlite3.connect(self.db_name)
         with con:
             cur = con.cursor()
-            cur.executemany("INSERT INTO relationships VALUES (?,?,?,?)", db_rows)
+            cur.executemany("INSERT INTO relationships VALUES (?,?,?,?)",
+                            db_rows)
         con.close()
         self.frames = []
 
@@ -151,7 +148,8 @@ class SpearframeRelationship(Relationship):
         con = sqlite3.connect(self.db_name)
         with con:
             cur = con.cursor()
-            total = cur.execute("SELECT COUNT(*) FROM relationships").fetchone()[0]
+            total = cur.execute("SELECT COUNT(*) "
+                                "FROM relationships").fetchone()[0]
         con.close()
         return total
 

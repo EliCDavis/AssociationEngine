@@ -1,6 +1,5 @@
 import math
 import os
-import time
 
 from AssociationEngine.Relationship.Variable import Variable
 from AssociationEngine.Relationship.SpearframeRelationship import \
@@ -19,7 +18,8 @@ def test_should_show_strong_association():
 
     for degree in range(180):
         var1.on_data(math.sin(math.radians(degree * 10)), degree, degree+1)
-        var2.on_data(math.cos(math.radians(degree * 10) + (math.pi / 2.0)), degree, degree+1)
+        var2.on_data(math.cos(math.radians(degree * 10) + (math.pi / 2.0)),
+                     degree, degree+1)
 
     assert rel.get_last_pushed_value() > .95
 
