@@ -8,6 +8,10 @@ class Snapper:
         self.windowStart = None
         self.windowEnd = None
 
+    def set_window_size(self, new_window_size):
+        # Should just set the window size and let it take effect on next snapshot
+        self.timeWindow = new_window_size
+
     def on_data(self, sensor, data, timestamp=None):
         """
         This function receives data from a sensor and stores it for use in
