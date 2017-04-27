@@ -39,10 +39,15 @@ def test_should_receive_data_from_multiple_sensors():
     sensor1.publish(2)
     sensor2 = Sensor()
     snapper.add_sensor(sensor2)
+
+    startTime = snapper.windowStart
+    endTime = snapper.windowEnd
+
     sensor2.publish(3)
 
     assert snapper.dataBuffer == {sensor1.uuid: [2], sensor2.uuid: [3]}
-    assert snapper.get_snapshot() == {sensor1.uuid: 2, sensor2.uuid: 3}
+    assert snapper.get_snapshot() == {"start": startTime, "end": endTime,
+                                      sensor1.uuid: 2, sensor2.uuid: 3}
 
 
 def test_should_properly_generate_snapshot_from_complete_data():
@@ -56,9 +61,13 @@ def test_should_properly_generate_snapshot_from_complete_data():
 
     assert snapper.snapshot == {}
 
+    startTime = snapper.windowStart
+    endTime = snapper.windowEnd
+
     sensor2.publish(3)
 
-    assert snapper.get_snapshot() == {sensor1.uuid: 2, sensor2.uuid: 3}
+    assert snapper.get_snapshot() == {"start": startTime, "end": endTime,
+                                      sensor1.uuid: 2, sensor2.uuid: 3}
 
 
 def test_should_forward_snapshot_once_data_complete():
@@ -71,10 +80,15 @@ def test_should_forward_snapshot_once_data_complete():
     sensor2 = Sensor()
     snapper.add_sensor(sensor2)
     sensor2.publish(3, 1)
+
+    startTime = snapper.windowStart
+    endTime = snapper.windowEnd
+
     # Force a snapshot publish by pushing value with time past window
     sensor2.publish(3, 11)
 
-    manager.on_data.assert_called_with({sensor1.uuid: 2, sensor2.uuid: 3})
+    manager.on_data.assert_called_with({"start": startTime, "end": endTime,
+                                        sensor1.uuid: 2, sensor2.uuid: 3})
 
 
 def test_should_store_sensor():

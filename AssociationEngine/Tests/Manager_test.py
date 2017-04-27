@@ -81,12 +81,12 @@ def test_push_snapshot():
     variable1.on_data = MagicMock()
     variable2.on_data = MagicMock()
 
-    snapshot = {sensor1.uuid: 1, sensor2.uuid: 2}
+    snapshot = {"start": 20, "end": 40, sensor1.uuid: 1, sensor2.uuid: 2}
 
     manager.on_data(snapshot)
 
-    variable1.on_data.assert_called_with(1)
-    variable2.on_data.assert_called_with(2)
+    variable1.on_data.assert_called_with(1, 20, 40)
+    variable2.on_data.assert_called_with(2, 20, 40)
 
 
 def test_get_value_matrix():
