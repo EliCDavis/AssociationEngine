@@ -40,10 +40,12 @@ function SocketConnectionService() {
     });
 
     _socket.on("update relationship", function(data){
+        console.log(data);
+         var fuckMePapa = JSON.parse(data);
        console.log("Updataing relationship \n" +
-                    "Sensor_x: "+ data.sensor_x +"\n" +
-                    "Sensor_y: "+ data.sensor_y +"\n" +
-                    "Value: " + data.value);
+                    "Sensor_x: "+ fuckMePapa.sensor_x +"\n" +
+                    "Sensor_y: "+ fuckMePapa.sensor_y +"\n" +
+                    "Value: " + fuckMePapa.value);
     });
 
 }

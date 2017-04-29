@@ -28,7 +28,7 @@ function GraphDirective() {
                 data[0].forEach(function(nodeRenderData) {
                     nodesRendered[nodeRenderData.renderData.id] = graph.createNode(nodeRenderData);
                 });
-
+                console.log(data);
                 // Add connections between them
                 data[1].forEach(function(line) {
                     graph.linkNodes(nodesRendered[line.ids[0]], nodesRendered[line.ids[1]], {

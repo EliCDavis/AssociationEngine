@@ -8,13 +8,12 @@ from flask_socketio import SocketIO
 from AssociationEngine.Sensor.Cosine import Cosine
 from AssociationEngine.Sensor.Sine import Sine
 from AssociationEngine.Snapper.Manager import Manager
-from AssociationEngine.Examples.webpage.Subscriber import Relationship_Subscriber
+from AssociationEngine.Examples.webpage import Subscriber
 
 current_sensors = []
 AEManager = Manager()
 app = Flask(__name__, static_folder='dist', static_url_path='')
 io = SocketIO(app)
-thread = None
 ticker = None
 
 
@@ -49,18 +48,18 @@ def client_connected():
     print("New Connection")
     send_sensors(new_connection=True)
     unfreeze_dictionary(AEManager.get_value_matrix())
-    io.emit("update relationship", json.dumps(unfreeze_dictionary(AEManager.get_value_matrix())))
+
 
 
 def send_sensors(new_connection=False):
     global current_sensors
     for uuid in map(lambda sensor: sensor.uuid, AEManager.sensors):
         if uuid not in current_sensors or new_connection:
-            io.emit("sensor added", json.dumps(str(uuid)))
+            io.emit("sensor added", json.dumps(str(uuid)), broadcast=True)
     current_sensors = list(map(lambda sensor: sensor.uuid, AEManager.sensors))
 
 
-def update_relationship(sensor_x, sensor_y, value):     
+def update_relationship(sensor_x, sensor_y, value):
     io.emit('update relationship', {"sensor_x": sensor_x,
                                     "sensor_y": sensor_y,
                                     "value": value})
@@ -73,13 +72,14 @@ def tick_loop():
     sin.tick(time())
     cos.tick(time())
     AEManager.add_sensor(sin)
+    #sleep(5)
     AEManager.add_sensor(cos)
 
     while 1:
-        print(AEManager.get_value_matrix())
+        # print(AEManager.get_value_matrix())
         sin.tick(time())
         cos.tick(time())
-        sleep(5)
+        sleep(1)
 
 
 def unfreeze_dictionary(dictionary):
@@ -88,7 +88,7 @@ def unfreeze_dictionary(dictionary):
                                "sensor_y": str(val2),
                                "value": dictionary[frozenset((val1, val2))]}
         print(val1,val2,dictionary[frozenset((val1, val2))],sep='\n')
-        io.send("update relationship", json.dumps(unfrozen_dictionary))
+        io.emit("update relationship", json.dumps(unfrozen_dictionary))
 
 
 if __name__ == '__main__':
