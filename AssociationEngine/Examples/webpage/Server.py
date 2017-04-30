@@ -8,14 +8,31 @@ from flask_socketio import SocketIO
 from AssociationEngine.Sensor.Cosine import Cosine
 from AssociationEngine.Sensor.Sine import Sine
 from AssociationEngine.Snapper.Manager import Manager
-from AssociationEngine.Examples.webpage import Subscriber
+from AssociationEngine.Examples.webpage.Subscriber import RelationshipSubscriber
+
 
 current_sensors = []
+sensors = []
+sensor_pairs = []
 AEManager = Manager()
 app = Flask(__name__, static_folder='dist', static_url_path='')
-io = SocketIO(app)
+io = SocketIO(app, logger=True, debug=True)
 ticker = None
 subscribers = []
+
+
+def subscribe_sensors():
+    if subscribers == []:
+        for sensor_x, sensor_y in AEManager.get_all_relationships():
+            subscriber = RelationshipSubscriber(sensor_x,
+                                                sensor_y,
+                                                lambda x: io.emit('update relationship',
+                                                                  x,
+                                                                  broadcast=True))
+            subscribers.append(subscriber)
+            AEManager.matrix.relationships[frozenset((sensor_x, sensor_y))].subscribe(subscriber)
+
+
 
 @app.route("/")
 def index():
@@ -45,11 +62,12 @@ def fucked_up():
 
 @io.on("connect")
 def client_connected():
+
+
     print("New Connection")
     send_sensors(new_connection=True)
+    subscribe_sensors()
     unfreeze_dictionary(AEManager.get_value_matrix())
-#    for sensor_x, sensor_y in AEManager.get_value_matrix():
-#        subscribers.append(Subscriber(sensor_x, sensor_y))
 
 
 def send_sensors(new_connection=False):
@@ -60,11 +78,10 @@ def send_sensors(new_connection=False):
     current_sensors = list(map(lambda sensor: sensor.uuid, AEManager.sensors))
 
 
-def update_relationship(sensor_x, sensor_y, value):
-    io.emit('update relationship', {"sensor_x": sensor_x,
-                                    "sensor_y": sensor_y,
-                                    "value": value})
-    print("SUBSCRIBEDBOIS")
+def update_relationship(sensor_x, sensor_y, value, socket):
+    socket.emit('update relationship', {"sensor_x": str(sensor_x),
+                                    "sensor_y": str(sensor_y),
+                                    "value": value}, broadcast=True)
 
 
 def tick_loop():
@@ -74,7 +91,6 @@ def tick_loop():
     cos.tick(time())
     AEManager.add_sensor(sin)
     AEManager.add_sensor(cos)
-
     while 1:
         sin.tick(time())
         cos.tick(time())
