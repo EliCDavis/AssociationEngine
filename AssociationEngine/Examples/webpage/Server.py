@@ -85,8 +85,7 @@ def unfreeze_dictionary(dictionary):
     for val1, val2 in dictionary:
         unfrozen_dictionary = {"sensor_x": str(val1),
                                "sensor_y": str(val2),
-                               "value": .8}
-        print(val1,val2,dictionary[frozenset((val1, val2))],sep='\n')
+                               "value": dictionary[frozenset((val1, val2))]}
         io.emit("update relationship", unfrozen_dictionary)
 
 
