@@ -1,16 +1,18 @@
 import csv
+from _datetime import datetime
 
 from AssociationEngine.Sensor.Sensor import Sensor
 from AssociationEngine.Snapper.Manager import Manager
 
 
 def get_manager_and_sensor_data_from_cvs(filename):
+    # List of (datetime, value) but datetime is still a string
     sensors_data = []
 
     with open(filename, newline='') as csvfile:
         csvreader = csv.reader(csvfile)
         for row in csvreader:
-            sensors_data.append(list(map(int, row)))
+            sensors_data.append(row)
 
     manager = Manager()
     for _ in range(len(sensors_data)):
@@ -22,8 +24,11 @@ def get_manager_and_sensor_data_from_cvs(filename):
 
 def publish_all_sensors(manager, sensors_data):
     for i, sensor in enumerate(manager.sensors):
-        data = sensors_data[i].pop(0)
-        sensor.publish(data)
+        datetimeStr, valueStr = sensors_data[i].pop(0)
+        data = int(valueStr)
+        timestamp = datetime.strptime(datetimeStr, "%Y-%m-%d %H:%M:%S")\
+            .timestamp()
+        sensor.publish(data, timestamp=timestamp)
 
 
 if __name__ == '__main__':
