@@ -41,7 +41,7 @@ function SocketConnectionService() {
 
     _socket.on("update relationship", function(data){
         console.log(data);
-       console.log("Updataing relationship \n" +
+       console.log("Updating relationship \n" +
                     "Sensor_x: "+ data.sensor_x +"\n" +
                     "Sensor_y: "+ data.sensor_y +"\n" +
                     "Value: " + data.value);

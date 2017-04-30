@@ -101,7 +101,7 @@ class Manager:
 
     def get_all_relationships(self):
         relationships = []
-        for sensor_x, sensor_y in  self.matrix.relationships:
+        for sensor_x, sensor_y in self.matrix.relationships:
             relationships.append((sensor_x, sensor_y))
 
         return relationships
