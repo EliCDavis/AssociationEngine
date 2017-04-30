@@ -1,7 +1,9 @@
-from Snapper.Snapper import Snapper
-from Snapper.AssociationMatrix import AssociationMatrix
-from Relationship.Variable import Variable
-from Relationship.SpearframeRelationship import SpearframeRelationship
+from AssociationEngine.Relationship.SpearframeRelationship \
+    import SpearframeRelationship
+from AssociationEngine.Relationship.Variable import Variable
+from AssociationEngine.Snapper.Snapper import Snapper
+
+from AssociationEngine.Snapper.AssociationMatrix import AssociationMatrix
 
 
 class Manager:
@@ -12,6 +14,9 @@ class Manager:
         self.variables = []
         self.snapper = Snapper(self)
         self.matrix = AssociationMatrix()
+
+    def set_window_size(self, new_window_size):
+        self.snapper.set_window_size(new_window_size)
 
     def add_sensor(self, sensor):
         """
@@ -84,10 +89,12 @@ class Manager:
         :param snapshot:
         :return:
         """
+        start = snapshot.pop("start")
+        stop = snapshot.pop("end")
         for sensorID in snapshot:
             variable = self.route_map[sensorID]
             value = snapshot[sensorID]
-            variable.on_data(value)
+            variable.on_data(value, start, stop)
 
     def get_relationship_from_sensors(self, sensor1, sensor2):
         return self.matrix.get_relationship_from_sensors(sensor1, sensor2)

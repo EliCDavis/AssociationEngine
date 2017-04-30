@@ -1,8 +1,9 @@
 from scipy.stats import spearmanr
-from Relationship.Relationship import Relationship
-from Relationship.Frame import Frame
 import sqlite3
 import math
+
+from AssociationEngine.Relationship.Frame import Frame
+from AssociationEngine.Relationship.Relationship import Relationship
 
 
 class SpearframeRelationship(Relationship):
@@ -44,7 +45,7 @@ class SpearframeRelationship(Relationship):
         # sensor_y
         self.y_mono_list = []
 
-    def get_value_between_times(self):
+    def get_value_between_times(self, x, y):
 
         return 0
 
@@ -103,6 +104,9 @@ class SpearframeRelationship(Relationship):
         self.x_last_direction = 0
         self.y_last_direction = 0
         return frame
+
+    def get_correlation_coefficient(self):
+        return self.get_last_pushed_value()
 
     def on_new_value(self, value, id_of_var):
         """

@@ -1,6 +1,6 @@
-from Snapper.Manager import Manager
-from Sensor.Sine import Sine
-from Sensor.Cosine import Cosine
+from AssociationEngine.Snapper.Manager import Manager
+from AssociationEngine.Sensor.Sine import Sine
+from AssociationEngine.Sensor.Cosine import Cosine
 
 
 def test_integration():

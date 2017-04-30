@@ -1,7 +1,7 @@
 import csv
 
-from Sensor.Sensor import Sensor
-from Snapper.Manager import Manager
+from AssociationEngine.Sensor.Sensor import Sensor
+from AssociationEngine.Snapper.Manager import Manager
 
 
 def get_manager_and_sensor_data_from_cvs(filename):

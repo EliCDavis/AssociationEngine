@@ -1,9 +1,21 @@
-from Snapper.Manager import Manager
-from Snapper.Snapper import Snapper
-from Snapper.AssociationMatrix import AssociationMatrix
-from Sensor.Sensor import Sensor
-from Relationship.Variable import Variable
 from unittest.mock import MagicMock
+
+from AssociationEngine.Relationship.Variable import Variable
+from AssociationEngine.Sensor.Sensor import Sensor
+from AssociationEngine.Snapper.Manager import Manager
+from AssociationEngine.Snapper.Snapper import Snapper
+from AssociationEngine.Snapper.AssociationMatrix import AssociationMatrix
+
+
+def test_should_call_set_window_size_on_snapper():
+    manager = Manager()
+    manager.snapper.set_window_size = MagicMock()
+
+    manager.set_window_size(20.0)
+    manager.snapper.set_window_size.assert_called_with(20.0)
+
+    manager.set_window_size(30.0)
+    manager.snapper.set_window_size.assert_called_with(30.0)
 
 
 def test_should_initialize_snapper_and_matrix():
@@ -69,12 +81,12 @@ def test_push_snapshot():
     variable1.on_data = MagicMock()
     variable2.on_data = MagicMock()
 
-    snapshot = {sensor1.uuid: 1, sensor2.uuid: 2}
+    snapshot = {"start": 20, "end": 40, sensor1.uuid: 1, sensor2.uuid: 2}
 
     manager.on_data(snapshot)
 
-    variable1.on_data.assert_called_with(1)
-    variable2.on_data.assert_called_with(2)
+    variable1.on_data.assert_called_with(1, 20, 40)
+    variable2.on_data.assert_called_with(2, 20, 40)
 
 
 def test_get_value_matrix():
