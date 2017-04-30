@@ -118,4 +118,8 @@ def test_get_relationship_from_sensors():
     manager.get_relationship_from_sensors(sensor1, sensor2)
 
     manager.matrix.get_relationship_from_sensors.assert_called_with(sensor1,
-                                                                    sensor2)
+
+
+def test_get_all_relationship():
+    manager = Manager()
+    assert manager.get_all_relationships() is not None
