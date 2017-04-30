@@ -15,7 +15,7 @@ AEManager = Manager()
 app = Flask(__name__, static_folder='dist', static_url_path='')
 io = SocketIO(app)
 ticker = None
-
+subscribers = []
 
 @app.route("/")
 def index():
@@ -48,7 +48,8 @@ def client_connected():
     print("New Connection")
     send_sensors(new_connection=True)
     unfreeze_dictionary(AEManager.get_value_matrix())
-
+#    for sensor_x, sensor_y in AEManager.get_value_matrix():
+#        subscribers.append(Subscriber(sensor_x, sensor_y))
 
 
 def send_sensors(new_connection=False):
@@ -72,11 +73,9 @@ def tick_loop():
     sin.tick(time())
     cos.tick(time())
     AEManager.add_sensor(sin)
-    #sleep(5)
     AEManager.add_sensor(cos)
 
     while 1:
-        # print(AEManager.get_value_matrix())
         sin.tick(time())
         cos.tick(time())
         sleep(1)
@@ -86,9 +85,9 @@ def unfreeze_dictionary(dictionary):
     for val1, val2 in dictionary:
         unfrozen_dictionary = {"sensor_x": str(val1),
                                "sensor_y": str(val2),
-                               "value": dictionary[frozenset((val1, val2))]}
+                               "value": .8}
         print(val1,val2,dictionary[frozenset((val1, val2))],sep='\n')
-        io.emit("update relationship", json.dumps(unfrozen_dictionary))
+        io.emit("update relationship", unfrozen_dictionary)
 
 
 if __name__ == '__main__':
