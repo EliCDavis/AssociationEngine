@@ -117,7 +117,7 @@ def test_get_relationship_from_sensors():
     manager.matrix.get_relationship_from_sensors = MagicMock()
     manager.get_relationship_from_sensors(sensor1, sensor2)
 
-    manager.matrix.get_relationship_from_sensors.assert_called_with(sensor1,
+    manager.matrix.get_relationship_from_sensors.assert_called_with(sensor1,sensor2)
 
 
 def test_get_all_relationship():
