@@ -3,6 +3,8 @@ from datetime import datetime
 from operator import itemgetter
 
 # Each field will turn into an individual sensor for each station
+import itertools
+
 FIELDS = [
     "HOURLYDRYBULBTEMPF",
     "HOURLYWETBULBTEMPF",
@@ -41,9 +43,14 @@ def main():
 
         for station_name in station_data:
             for i in range(1, len(FIELDS) + 1):
-                writer.writerow(list(
-                    map(itemgetter(i), station_data[station_name])
-                ))
+                writer.writerow(list(itertools.chain(
+                    *map(lambda pair: (pair[0], int(pair[1])),
+                         filter(lambda pair: pair[1].isdigit(),
+                                map(itemgetter(0, i),
+                                    station_data[station_name])
+                                )
+                         )
+                )))
 
 
 if __name__ == '__main__':
