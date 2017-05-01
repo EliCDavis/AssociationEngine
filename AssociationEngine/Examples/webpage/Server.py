@@ -70,6 +70,11 @@ def client_connected():
     unfreeze_dictionary(AEManager.get_value_matrix())
 
 
+@io.on("disconnect")
+def client_disconnected():
+    print("Client Disconnected")
+
+
 def send_sensors(new_connection=False):
     global current_sensors
     for uuid in map(lambda sensor: sensor.uuid, AEManager.sensors):
