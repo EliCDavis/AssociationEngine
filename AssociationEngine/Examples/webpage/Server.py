@@ -42,7 +42,8 @@ def index():
     if ticker is None:
         ticker = Thread(target=tick_loop)
         ticker.start()
-
+        sleep(2)
+        subscribe_sensors()
     return app.send_static_file('index.html')
 
 
@@ -90,10 +91,11 @@ def tick_loop():
     timestamp = 0
     for i in range(min([len(n) for n in data])):
         for sensor in range(len(sensors)):
-            sensors[sensor].publish(data[sensor][timestamp]['date'],
-                                    data[sensor][timestamp]['value'])
+            sensors[sensor].publish(data=data[sensor][timestamp]['Value'],
+                                    timestamp=float(data[sensor][timestamp]['Time']))
         timestamp += 1
         sleep(10)
+    print("Done")
 
 
 def unfreeze_dictionary(dictionary):
@@ -105,5 +107,5 @@ def unfreeze_dictionary(dictionary):
 
 
 if __name__ == '__main__':
-    subscribe_sensors()
+
     io.run(app)
