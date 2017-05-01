@@ -23,7 +23,8 @@ class AssociationMatrix:
     def get_value_matrix(self):
         dict_with_values = {}
         for key, value in self.relationships.items():
-                dict_with_values[key] = value.get_correlation_coefficient()
+            # TODO: Change back to value.get_correlation_coefficient()
+            dict_with_values[key] = value.get_last_pushed_value()
         return dict_with_values
 
     def get_relationships_by_value_range(self, minvalue, maxvalue):
