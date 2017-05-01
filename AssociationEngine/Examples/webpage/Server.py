@@ -5,11 +5,11 @@ from time import sleep, time
 from flask import Flask, send_file
 from flask_socketio import SocketIO
 
-from AssociationEngine.Sensor.Cosine import Cosine
-from AssociationEngine.Sensor.Sine import Sine
+
+from AssociationEngine.Sensor.Sensor import Sensor
 from AssociationEngine.Snapper.Manager import Manager
 from AssociationEngine.Examples.webpage.Subscriber import RelationshipSubscriber
-
+from AssociationEngine.Examples.webpage.ReadFromCSV import formatted_csv_reader
 
 current_sensors = []
 sensors = []
@@ -83,16 +83,17 @@ def send_sensors(new_connection=False):
 
 
 def tick_loop():
-    sin = Sine()
-    cos = Cosine()
-    sin.tick(time())
-    cos.tick(time())
-    AEManager.add_sensor(sin)
-    AEManager.add_sensor(cos)
-    while 1:
-        sin.tick(time())
-        cos.tick(time())
-        sleep(1)
+    data = formatted_csv_reader()
+    for x in range(len(data)):
+        sensors.append(Sensor())
+        AEManager.add_sensor(sensors[x])
+    timestamp = 0
+    for i in range(min([len(n) for n in data])):
+        for sensor in range(len(sensors)):
+            sensors[sensor].publish(data[sensor][timestamp]['date'],
+                                    data[sensor][timestamp]['value'])
+        timestamp += 1
+        sleep(10)
 
 
 def unfreeze_dictionary(dictionary):
