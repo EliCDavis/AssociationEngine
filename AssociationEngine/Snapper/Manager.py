@@ -100,8 +100,4 @@ class Manager:
         return self.matrix.get_relationship_from_sensors(sensor1, sensor2)
 
     def get_all_relationships(self):
-        relationships = []
-        for sensor_x, sensor_y in self.matrix.relationships:
-            relationships.append((sensor_x, sensor_y))
-
-        return relationships
+        return self.matrix.relationships

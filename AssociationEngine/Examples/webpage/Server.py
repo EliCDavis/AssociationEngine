@@ -23,14 +23,15 @@ subscribers = []
 
 def subscribe_sensors():
     if subscribers == []:
-        for sensor_x, sensor_y in AEManager.get_all_relationships():
+        relationships = AEManager.get_all_relationships()
+        for sensor_x, sensor_y in relationships:
             subscriber = RelationshipSubscriber(sensor_x,
                                                 sensor_y,
                                                 lambda x: io.emit('update relationship',
                                                                   x,
                                                                   broadcast=True))
             subscribers.append(subscriber)
-            AEManager.matrix.relationships[frozenset((sensor_x, sensor_y))].subscribe(subscriber)
+            relationships[frozenset((sensor_x, sensor_y))].subscribe(subscriber)
 
 
 
@@ -62,11 +63,9 @@ def fucked_up():
 
 @io.on("connect")
 def client_connected():
-
-
     print("New Connection")
     send_sensors(new_connection=True)
-    subscribe_sensors()
+
     unfreeze_dictionary(AEManager.get_value_matrix())
 
 
@@ -81,12 +80,6 @@ def send_sensors(new_connection=False):
         if uuid not in current_sensors or new_connection:
             io.emit("sensor added", json.dumps(str(uuid)), broadcast=True)
     current_sensors = list(map(lambda sensor: sensor.uuid, AEManager.sensors))
-
-
-def update_relationship(sensor_x, sensor_y, value, socket):
-    socket.emit('update relationship', {"sensor_x": str(sensor_x),
-                                    "sensor_y": str(sensor_y),
-                                    "value": value}, broadcast=True)
 
 
 def tick_loop():
@@ -111,4 +104,5 @@ def unfreeze_dictionary(dictionary):
 
 
 if __name__ == '__main__':
+    subscribe_sensors()
     io.run(app)
