@@ -23,7 +23,6 @@
  */
 
 var app = require("angular").module('App');
-app.directive('csEx', require('./ExampleDirective'));
 app.directive('app', require('./AppDirective'));
 app.directive('csToolbar', require('./ToolbarDirective'));
 app.directive('csGraph', require('./GraphDirective'));

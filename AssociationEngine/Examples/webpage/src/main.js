@@ -53,6 +53,4 @@ app.config(function($routeProvider) {
         });
 });
 
-console.log("ARE YOU FUCKING RUNNING ");
 angular.bootstrap(document, ['App']);
-
