@@ -27,18 +27,15 @@ class SpearframeRelationship(Relationship):
                                   sensor_y.get_uuid(): []}
 
         self.db_name = "spearframe.db"
-        # self.connection = sqlite3.connect(self.db_name)
 
-        # self.tempid = uuid4()
-        # print("\nConnection opened", self.tempid)
-        # traceback.print_stack(file=sys.stdout, limit=4)
-
-        # self.db_cursor = self.connection.cursor()
         if not self.__frame_table_exists():
             self.__create_frame_table()
 
-        # Create list for keeping up with all previous frames computed
-        self.frames = []
+        # Create a frame for keeping up with all previous frames computed
+        self.summed_frame = None
+
+        # Current Frame
+        self.frame = None
 
         self.x_last_direction = 0
         self.y_last_direction = 0
@@ -106,6 +103,8 @@ class SpearframeRelationship(Relationship):
         # Reset values..
         self.x_mono_list.clear()
         self.y_mono_list.clear()
+        self.current_iteration[self.sensor_x.get_uuid()].clear()
+        self.current_iteration[self.sensor_y.get_uuid()].clear()
         self.x_last_direction = 0
         self.y_last_direction = 0
         self.current_frame_start_time += frame.get_total_time()
@@ -126,32 +125,32 @@ class SpearframeRelationship(Relationship):
         with con:
             cur = con.cursor()
             cur.execute("CREATE TABLE relationships ("
-                        + "relationship_uuid TEXT, association REAL,"
+                        + "relationship_uuid TEXT, correlation REAL,"
                         + " start_time INTEGER, end_time INTEGER)")
         con.close()
 
-    def __insert_frames_to_db(self):
-        db_rows = []
-        for frame in self.frames:
-            db_rows.append((str(self.uuid), frame.get_final_correlation(),
-                            frame.get_start_time(),
-                            frame.get_start_time() + frame.get_total_time()))
+    def __insert_frame_to_db(self):
+        frame_duration = self.frame.get_start_time() + \
+                         self.frame.get_total_time()
         con = sqlite3.connect(self.db_name)
         with con:
             cur = con.cursor()
-            cur.executemany("INSERT INTO relationships VALUES (?,?,?,?)",
-                            db_rows)
+            cur.execute("INSERT INTO relationships VALUES (?,?,?,?)",
+                        (str(self.uuid),
+                         self.frame.get_final_correlation(),
+                         self.frame.get_start_time(),
+                         frame_duration))
         con.close()
-        self.frames = []
 
-    def __get_total_frames(self):
-        con = sqlite3.connect(self.db_name)
-        with con:
-            cur = con.cursor()
-            total = cur.execute("SELECT COUNT(*) "
-                                "FROM relationships").fetchone()[0]
-        con.close()
-        return total
+    # Method no longer being used
+    # def __get_total_frames(self):
+    #     con = sqlite3.connect(self.db_name)
+    #     with con:
+    #         cur = con.cursor()
+    #         total = cur.execute("SELECT COUNT(*) "
+    #                             "FROM relationships").fetchone()[0]
+    #     con.close()
+    #     return total
 
     def on_new_value(self, value, id_of_var, start_time, end_time):
 
@@ -172,56 +171,109 @@ class SpearframeRelationship(Relationship):
         if self.current_frame_start_time is None:
             self.current_frame_start_time = start_time
 
-        # Update our current iteration
-        self.current_iteration[id_of_var].append(value)
+        if start_time < self.current_frame_start_time:
+            return
 
-        # If we've generated
-        if self.__should_generate_new_frame(
-                self.current_iteration[self.sensor_x.get_uuid()],
-                self.current_iteration[self.sensor_y.get_uuid()]):
-            self.frames.append(self.__generate_frame_from_values(
-                self.current_iteration[self.sensor_x.get_uuid()],
-                self.current_iteration[self.sensor_y.get_uuid()]))
-            self._push_to_subscribers(generate_association(self.frames))
-            self.__insert_frames_to_db()
+        if value is not None:
+            # Update our current iteration
+            self.current_iteration[id_of_var].append(value)
+
+            # If we've generated
+            if self.__should_generate_new_frame(
+                    self.current_iteration[self.sensor_x.get_uuid()],
+                    self.current_iteration[self.sensor_y.get_uuid()]):
+                self.frame = self.__generate_frame_from_values(
+                    self.current_iteration[self.sensor_x.get_uuid()],
+                    self.current_iteration[self.sensor_y.get_uuid()])
+                if self.summed_frame is None:
+                    association = generate_association([self.frame])
+                    self.summed_frame = self.frame
+                else:
+                    association = generate_association(
+                                    [self.summed_frame, self.frame])
+                    self.summed_frame.final_correlation = association
+                    frame_time = self.frame.get_total_time()
+                    self.summed_frame.total_time += frame_time
+                self._push_to_subscribers(association)
+                self.__insert_frame_to_db()
+        else:
+            self.current_frame_start_time = end_time
+            self.x_mono_list.clear()
+            self.y_mono_list.clear()
+            self.current_iteration[self.sensor_x.get_uuid()].clear()
+            self.current_iteration[self.sensor_y.get_uuid()].clear()
+            self.x_last_direction = 0
+            self.y_last_direction = 0
 
     def get_correlation_coefficient(self):
-        if not self.frames:
+        if self.get_last_pushed_value() is None:
+            return 0.0
+        elif not self.current_iteration[self.sensor_x.get_uuid()] \
+                and not self.current_iteration[self.sensor_y.get_uuid()]:
             return self.get_last_pushed_value()
         else:
-            current_iter_association = generate_association(self.frames)
-            current_iter_frame_count = len(self.frames)
-            total_frame_count = self.__get_total_frames()
+            frame = Frame(self.current_frame_start_time)
 
-            current_iter_ratio = current_iter_frame_count / \
-                (current_iter_frame_count + total_frame_count)
-            total_iter_ratio = total_frame_count / \
-                (current_iter_frame_count + total_frame_count)
+            x_vals = self.current_iteration[self.sensor_x.get_uuid()]
+            y_vals = self.current_iteration[self.sensor_y.get_uuid()]
 
-            current_iter = current_iter_association * current_iter_ratio
-            total_iter = self.get_last_pushed_value() * total_iter_ratio
+            if len(self.x_mono_list) >= len(self.y_mono_list):
+                previous_index = 0
+                for mono_change_index in self.x_mono_list:
+                    frame.add_correlation(
+                        len(x_vals[previous_index:mono_change_index]),
+                        spearmanr(x_vals[previous_index:mono_change_index],
+                                  y_vals[previous_index:mono_change_index])[0])
+                    previous_index = mono_change_index
+            else:
+                previous_index = 0
+                for mono_change_index in self.y_mono_list:
+                    frame.add_correlation(
+                        len(x_vals[previous_index:mono_change_index]),
+                        spearmanr(x_vals[previous_index:mono_change_index],
+                                  y_vals[previous_index:mono_change_index])[0])
+                    previous_index = mono_change_index
 
-            return current_iter + total_iter
+            if frame.get_final_correlation() is not None:
+                current_iter_association = generate_association([frame])
+                current_iter_time = frame.get_total_time()
+                total_iter_time = self.summed_frame.get_total_time()
+
+                current_iter_ratio = current_iter_time / \
+                    (current_iter_time + total_iter_time)
+                total_iter_ratio = total_iter_time / \
+                    (current_iter_time + total_iter_time)
+
+                current_iter = current_iter_association * current_iter_ratio
+                total_iter = self.get_last_pushed_value() * total_iter_ratio
+
+                return current_iter + total_iter
+            else:
+                return self.get_last_pushed_value()
 
     def get_value_between_times(self, start_time, end_time):
         con = sqlite3.connect(self.db_name)
         with con:
-            frames = con.execute(
+            cur = con.cursor()
+            frames = cur.execute(
                 'SELECT * FROM relationships '
                 'WHERE end_time >= ? AND start_time < ?',
-                (start_time, end_time))
-        con.close()
+                (start_time, end_time)).fetchall()
 
-        summed_association = 0
+        summed_association = 0.0
         duration = end_time - start_time
+        end_index = 3
+        correlation_index = 1
         for frame in frames:
-            if frame['end_time'] > end_time:
+            if frame[end_index] > end_time:
                 frame_end = end_time
             else:
-                frame_end = frame['end_time']
-            association = (frame_end - start_time) / duration
-            summed_association += association * frame['association']
+                frame_end = frame[end_index]
+            ratio = (frame_end - start_time) / duration
+            summed_association += ratio * abs(frame[correlation_index])
             start_time = frame_end
+
+        con.close()
 
         return summed_association
 
