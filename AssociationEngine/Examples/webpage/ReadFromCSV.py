@@ -7,10 +7,10 @@ def formatted_csv_reader():
     with open('processed_noaa_weather_data.csv', newline='') as csvfile:
         reader = csv.reader(csvfile)
         data_sorted_by_date = []
-        sensors = 0
+        sensors = []
         for i, row in enumerate(reader):
-            sensors += 1
-            for timestamp, value in grouper(row, 2):
+            sensors.append(row[0])
+            for timestamp, value in grouper(row[1:], 2):
                 timestamp = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
                 value = int(value)
                 data_sorted_by_date.append((timestamp, i, value))
@@ -26,4 +26,4 @@ def grouper(iterable, n, fillvalue=None):
 
 
 if __name__ == '__main__':
-    print(formatted_csv_reader())
+    print(formatted_csv_reader()[0])

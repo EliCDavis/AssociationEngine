@@ -16,7 +16,7 @@ current_sensors = []
 sensors = []
 sensor_pairs = []
 AEManager = Manager()
-AEManager.set_window_size(60000)
+AEManager.set_window_size(3600000)
 app = Flask(__name__, static_folder='dist', static_url_path='')
 app.debug = True
 io = SocketIO(app, logger=True, debug=True)
@@ -88,11 +88,10 @@ def send_sensors(new_connection=False):
 
 
 def tick_loop():
-    numSensors, sensor_data = formatted_csv_reader()
-    print(numSensors)
+    sensors, sensor_data = formatted_csv_reader()
 
-    for _ in range(numSensors):
-        AEManager.add_sensor(Sensor())
+    for sensor_name in sensors:
+        AEManager.add_sensor(Sensor(name=sensor_name))
 
     timestamp = sensor_data[0][0]
     lastTimestamp = sensor_data[-1][0]
