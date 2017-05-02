@@ -7,8 +7,17 @@ Engine for generating network maps that displays which sensors are related to ot
 **Written for Python 3.6 or later**
 
 ## Installing
+### Docker
 
-[We doing pip or docker?]
+To run in Docker without building the Docker image from source:
+```bash
+docker run -p 5000:5000 -it jacobamason/association-engine
+```
+
+To build the Docker image from source:
+```bash
+docker build -t <your-dockerhub-id>/association-engine .
+```
 
 ## Developer Setup
 
@@ -17,7 +26,7 @@ git clone https://github.com/EliCDavis/AssociationEngine
 pip install -e .
 ```
 
-After everythings been installed, try running tests to make sure everythings working correctly
+After everything has been installed, try running tests to make sure everything is working correctly
 
 ```bash
 pytest
@@ -32,4 +41,4 @@ gulp build
 python Server.py
 ```
 
-If everything goes smoothly you should be able to open up localhost:5000 in your favorite web browser
+If everything goes smoothly, you should be able to open up localhost:5000 in your favorite web browser.
