@@ -222,13 +222,13 @@ class SpearframeRelationship(Relationship):
 
             if frame.get_final_correlation() is not None:
                 current_iter_association = generate_association([frame])
-                current_iter_frame_count = 1
-                total_frame_count = self.__get_total_frames()
+                current_iter_time = frame.get_total_time()
+                total_iter_time = self.summed_frame.get_total_time()
 
-                current_iter_ratio = current_iter_frame_count / \
-                    (current_iter_frame_count + total_frame_count)
-                total_iter_ratio = total_frame_count / \
-                    (current_iter_frame_count + total_frame_count)
+                current_iter_ratio = current_iter_time / \
+                    (current_iter_time + total_iter_time)
+                total_iter_ratio = total_iter_time / \
+                    (current_iter_time + total_iter_time)
 
                 current_iter = current_iter_association * current_iter_ratio
                 total_iter = self.get_last_pushed_value() * total_iter_ratio
