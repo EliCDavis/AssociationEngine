@@ -18,10 +18,6 @@ function SocketConnectionService() {
             console.log(data);
         })*/
 
-    new Rx.Observable.interval(1000).subscribe((x) => {
-        _socket.emit('pinggg', 'fuck');
-    });
-
     var _addClientMessageStream = function(messageType) {
 
         var newStream = new Rx.ReplaySubject(1);

@@ -24,11 +24,6 @@ ticker = None
 subscribers = []
 
 
-@io.on('pinggg')
-def handle_message(message):
-    print('RECIEVED PING: ' + message)
-    # unfreeze_dictionary(AEManager.get_value_matrix())
-
 def subscribe_sensors():
     if subscribers == []:
         relationships = AEManager.get_all_relationships()
