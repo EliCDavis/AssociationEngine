@@ -240,20 +240,23 @@ class SpearframeRelationship(Relationship):
     def get_value_between_times(self, start_time, end_time):
         con = sqlite3.connect(self.db_name)
         with con:
-            frames = con.execute(
+            cur = con.cursor()
+            frames = cur.execute(
                 'SELECT * FROM relationships '
                 'WHERE end_time >= ? AND start_time < ?',
-                (start_time, end_time))
+                (start_time, end_time)).fetchall()
 
-        summed_association = 0
+        summed_association = 0.0
         duration = end_time - start_time
+        end_index = 3
+        correlation_index = 1
         for frame in frames:
-            if frame['end_time'] > end_time:
+            if frame[end_index] > end_time:
                 frame_end = end_time
             else:
-                frame_end = frame['end_time']
-            association = (frame_end - start_time) / duration
-            summed_association += association * frame['association']
+                frame_end = frame[end_index]
+            ratio = (frame_end - start_time) / duration
+            summed_association += ratio * abs(frame[correlation_index])
             start_time = frame_end
 
         con.close()
