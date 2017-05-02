@@ -39,7 +39,6 @@ function GraphService(SocketConnectionService) {
 
     SocketConnectionService.server$[SocketMessageType.UpdateRelationship]
         .scan(function(relationships, rel) {
-            console.log("new relationship: " + Date.now());
 
             var updated = false;
 
@@ -47,7 +46,8 @@ function GraphService(SocketConnectionService) {
                 var curRel = relationships[relIndex];
                 if (curRel.ids[0] === rel.sensor_x && curRel.ids[1] === rel.sensor_y) {
                     updated = true;
-                    curRel.value = rel.value;
+                    console.log("update rel from: " + curRel.value + " to " + rel.value);
+                    relationships[relIndex].value = rel.value;
                 }
             }
 
@@ -56,6 +56,7 @@ function GraphService(SocketConnectionService) {
                     ids: [rel.sensor_x, rel.sensor_y],
                     value: rel.value
                 });
+                console.log("new relationship: " + rel.value);
             }
 
             return relationships;

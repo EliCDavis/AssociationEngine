@@ -16,7 +16,7 @@ current_sensors = []
 sensors = []
 sensor_pairs = []
 AEManager = Manager()
-AEManager.set_window_size(100)
+AEManager.set_window_size(10000)
 app = Flask(__name__, static_folder='dist', static_url_path='')
 app.debug = True
 io = SocketIO(app, logger=True, debug=True, async_mode="eventlet")
@@ -27,15 +27,15 @@ subscribers = []
 @io.on('pinggg')
 def handle_message(message):
     print('RECIEVED PING: ' + message)
-    #unfreeze_dictionary(AEManager.get_value_matrix())
+    # unfreeze_dictionary(AEManager.get_value_matrix())
 
 def subscribe_sensors():
     if subscribers == []:
         relationships = AEManager.get_all_relationships()
         print(relationships)
         for sensor_x, sensor_y in relationships:
-            subscriber = RelationshipSubscriber(sensor_x,
-                                                sensor_y,
+            subscriber = RelationshipSubscriber(str(AEManager.reverse_route_map[str(sensor_x)]),
+                                                str(AEManager.reverse_route_map[str(sensor_y)]),
                                                 lambda x: io.emit('update relationship',
                                                                   x,
                                                                   broadcast=True))
@@ -121,7 +121,6 @@ def tick_loop():
 
         simtimestamp += datetime.timedelta(hours=1)
         print("stepping to:", simtimestamp)
-        io.emit('update relationship', 'balls')
         io.sleep(.5)
 
     print("Simulation Complete")

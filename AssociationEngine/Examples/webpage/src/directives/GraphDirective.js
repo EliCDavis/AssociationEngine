@@ -50,6 +50,11 @@ function GraphDirective() {
 
             // Override line renderer to make lines thicker with stronger relationships
             graph.setLinkRenderMethod(function(graph, point1, point2, link) {
+
+                if (link.linkData.relationship <= 0.1) {
+                    return;
+                }
+
                 var ctx = graph.getContext();
                 ctx.strokeStyle = '#000000';
                 ctx.lineWidth = 25 * graph.getScale() * link.linkData.relationship;
