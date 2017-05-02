@@ -39,7 +39,7 @@ function GraphService(SocketConnectionService) {
 
     SocketConnectionService.server$[SocketMessageType.UpdateRelationship]
         .scan(function(relationships, rel) {
-            console.log("new relationship: ", rel);
+            console.log("new relationship: " + Date.now());
 
             var updated = false;
 

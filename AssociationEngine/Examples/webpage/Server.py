@@ -27,6 +27,7 @@ subscribers = []
 @io.on('pinggg')
 def handle_message(message):
     print('RECIEVED PING: ' + message)
+    unfreeze_dictionary(AEManager.get_value_matrix())
 
 def subscribe_sensors():
     if subscribers == []:
@@ -87,7 +88,7 @@ def send_sensors(new_connection=False):
     global current_sensors
     for uuid in map(lambda sensor: sensor.uuid, AEManager.sensors):
         if uuid not in current_sensors or new_connection:
-            io.emit("sensor added", json.dumps(str(uuid)), broadcast=True)
+            io.emit("sensor added", str(uuid), broadcast=True)
     current_sensors = list(map(lambda sensor: sensor.uuid, AEManager.sensors))
 
 

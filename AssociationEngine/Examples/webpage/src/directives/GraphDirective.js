@@ -29,17 +29,14 @@ function GraphDirective() {
                     nodesRendered[nodeRenderData.renderData.id] = graph.createNode(nodeRenderData);
                 });
 
-                console.log(nodesRendered, data[1]);
 
                 // Add connections between them
                 if (data[1].length > 0) {
                     data[1].forEach(function(line) {
 
                         if (!nodesRendered[line.ids[0]] || !nodesRendered[line.ids[1]]) {
-                            //return;
+                            return;
                         }
-
-                        console.log("succc", typeof(line.ids[0]), nodesRendered);
 
 
                         graph.linkNodes(nodesRendered[line.ids[0]], nodesRendered[line.ids[1]], {
