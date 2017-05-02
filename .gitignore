@@ -1,3 +1,6 @@
+*.db
+*.csv
+
 # Compiled source #
 ###################
 *.com
