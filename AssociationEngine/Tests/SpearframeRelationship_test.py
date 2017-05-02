@@ -152,3 +152,21 @@ def test_should_raise_error_when_unknown_publisher_emits():
     with pytest.raises(ValueError):
         rel.on_new_value(1, 4, 0, 1)
 
+
+def test_should_cause_frame_skip():
+    if os.path.exists("spearframe.db"):
+        os.remove("spearframe.db")
+    var1 = Variable()
+    var2 = Variable()
+    rel = SpearframeRelationship(var1, var2)
+
+    for degree in range(20):
+        if degree > 15 and rel.current_iteration[rel.sensor_x.get_uuid()]:
+            var1.on_data(None, degree, degree+1)
+            var2.on_data(math.cos(math.radians(degree * 10)), degree, degree + 1)
+            break
+        else:
+            var1.on_data(math.sin(math.radians(degree * 10)), degree, degree + 1)
+            var2.on_data(math.cos(math.radians(degree * 10)), degree, degree + 1)
+
+    assert not rel.current_iteration[rel.sensor_x.get_uuid()]

@@ -171,26 +171,40 @@ class SpearframeRelationship(Relationship):
         if self.current_frame_start_time is None:
             self.current_frame_start_time = start_time
 
-        # Update our current iteration
-        self.current_iteration[id_of_var].append(value)
+        if start_time < self.current_frame_start_time:
+            return
 
-        # If we've generated
-        if self.__should_generate_new_frame(
-                self.current_iteration[self.sensor_x.get_uuid()],
-                self.current_iteration[self.sensor_y.get_uuid()]):
-            self.frame = self.__generate_frame_from_values(
-                self.current_iteration[self.sensor_x.get_uuid()],
-                self.current_iteration[self.sensor_y.get_uuid()])
-            if self.summed_frame is None:
-                association = generate_association([self.frame])
-                self.summed_frame = self.frame
-            else:
-                association = generate_association(
-                                [self.summed_frame, self.frame])
-                self.summed_frame.final_correlation = association
-                self.summed_frame.total_time += self.frame.get_total_time()
-            self._push_to_subscribers(association)
-            self.__insert_frame_to_db()
+        if value is not None:
+            # Update our current iteration
+            self.current_iteration[id_of_var].append(value)
+
+            # If we've generated
+            if self.__should_generate_new_frame(
+                    self.current_iteration[self.sensor_x.get_uuid()],
+                    self.current_iteration[self.sensor_y.get_uuid()]):
+                self.frame = self.__generate_frame_from_values(
+                    self.current_iteration[self.sensor_x.get_uuid()],
+                    self.current_iteration[self.sensor_y.get_uuid()])
+                if self.summed_frame is None:
+                    association = generate_association([self.frame])
+                    self.summed_frame = self.frame
+                else:
+                    association = generate_association(
+                                    [self.summed_frame, self.frame])
+                    self.summed_frame.final_correlation = association
+                    frame_time = self.frame.get_total_time()
+                    self.summed_frame.total_time += frame_time
+                self._push_to_subscribers(association)
+                self.__insert_frame_to_db()
+        else:
+            self.current_frame_start_time = end_time
+            self.x_mono_list.clear()
+            self.y_mono_list.clear()
+            self.current_iteration[self.sensor_x.get_uuid()].clear()
+            self.current_iteration[self.sensor_y.get_uuid()].clear()
+            self.x_last_direction = 0
+            self.y_last_direction = 0
+
 
     def get_correlation_coefficient(self):
         if self.get_last_pushed_value() is None:
