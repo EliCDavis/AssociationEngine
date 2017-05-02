@@ -14,10 +14,12 @@ function GraphService(SocketConnectionService) {
 
     self.RelationValue$ = new Rx.ReplaySubject();
 
+    self.ObfuscateMode$ = new Rx.ReplaySubject();
+
+    self.ObfuscateMode$.subscribe((c) => { console.log(c) });
+
     SocketConnectionService.server$[SocketMessageType.SensorAdded]
         .scan(function(allNodes, newNode) {
-
-            console.log(newNode);
 
             for (var i = 0; i < allNodes.length; i++) {
                 if (allNodes[i].renderData.id === newNode) {
@@ -25,8 +27,8 @@ function GraphService(SocketConnectionService) {
                 }
             }
 
-            var name = newNode.name.split(":")[0]
-            var description = newNode.name.split(":")[1]
+            var name = newNode.name.split(":")[0];
+            var description = newNode.name.split(":")[1];
 
             allNodes.push({
                 renderData: {
@@ -51,7 +53,7 @@ function GraphService(SocketConnectionService) {
                 var curRel = relationships[relIndex];
                 if (curRel.ids[0] === rel.sensor_x && curRel.ids[1] === rel.sensor_y) {
                     updated = true;
-                    console.log("update rel from: " + curRel.value + " to " + rel.value);
+                    // console.log("update rel from: " + curRel.value + " to " + rel.value);
                     relationships[relIndex].value = rel.value;
                 }
             }
@@ -61,7 +63,7 @@ function GraphService(SocketConnectionService) {
                     ids: [rel.sensor_x, rel.sensor_y],
                     value: rel.value
                 });
-                console.log("new relationship: " + rel.value);
+                // console.log("new relationship: " + rel.value);
             }
 
             return relationships;

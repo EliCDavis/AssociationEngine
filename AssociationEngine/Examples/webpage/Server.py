@@ -13,7 +13,7 @@ from AssociationEngine.Sensor.Sensor import Sensor
 from AssociationEngine.Snapper.Manager import Manager
 
 AEManager = Manager()
-AEManager.set_window_size(10000)
+AEManager.set_window_size(20000)
 app = Flask(__name__, static_folder='dist', static_url_path='')
 app.debug = True
 io = SocketIO(app, logger=True, debug=True, async_mode="eventlet")
