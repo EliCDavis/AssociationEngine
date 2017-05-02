@@ -19,7 +19,7 @@ AEManager = Manager()
 AEManager.set_window_size(10)
 app = Flask(__name__, static_folder='dist', static_url_path='')
 app.debug = True
-io = SocketIO(app, logger=True, debug=True)
+io = SocketIO(app, logger=True, debug=True, async_mode="eventlet")
 ticker = None
 subscribers = []
 
@@ -43,22 +43,13 @@ def subscribe_sensors():
             relationships[frozenset((sensor_x, sensor_y))].subscribe(subscriber)
 
 
-
 @app.route("/")
 def index():
-    global ticker
-
-    if ticker is None:
-        ticker = Thread(target=tick_loop)
-        ticker.daemon = True
-        ticker.start()
-        sleep(2)
-        subscribe_sensors()
     return app.send_static_file('index.html')
 
 
 @app.route("/python/socket.io.js")
-def socketio():
+def get_socketio_js():
     return send_file("python_static/socket.io.1.7.3.min.js")
 
 
@@ -75,8 +66,17 @@ def fucked_up():
 @io.on("connect")
 def client_connected():
     print("New Connection")
+    global ticker
+
+    if ticker is None:
+        # ticker = Thread(target=tick_loop)
+        # ticker.daemon = True
+        # ticker.start()
+        ticker = io.start_background_task(target=tick_loop)
+        io.sleep(2)
     send_sensors(new_connection=True)
-    unfreeze_dictionary(AEManager.get_value_matrix())
+    subscribe_sensors()
+    #unfreeze_dictionary(AEManager.get_value_matrix())
 
 
 @io.on("disconnect")
@@ -122,7 +122,7 @@ def tick_loop():
         simtimestamp += datetime.timedelta(hours=1)
         print("stepping to:", simtimestamp)
         io.emit('update relationship', 'balls')
-        sleep(.5)
+        io.sleep(.5)
 
     print("Simulation Complete")
 
