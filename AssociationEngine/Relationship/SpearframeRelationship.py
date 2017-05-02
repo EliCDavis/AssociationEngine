@@ -142,14 +142,15 @@ class SpearframeRelationship(Relationship):
                          frame_duration))
         con.close()
 
-    def __get_total_frames(self):
-        con = sqlite3.connect(self.db_name)
-        with con:
-            cur = con.cursor()
-            total = cur.execute("SELECT COUNT(*) "
-                                "FROM relationships").fetchone()[0]
-        con.close()
-        return total
+    # Method no longer being used
+    # def __get_total_frames(self):
+    #     con = sqlite3.connect(self.db_name)
+    #     with con:
+    #         cur = con.cursor()
+    #         total = cur.execute("SELECT COUNT(*) "
+    #                             "FROM relationships").fetchone()[0]
+    #     con.close()
+    #     return total
 
     def on_new_value(self, value, id_of_var, start_time, end_time):
 
