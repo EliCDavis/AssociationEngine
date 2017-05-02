@@ -27,18 +27,15 @@ class SpearframeRelationship(Relationship):
                                   sensor_y.get_uuid(): []}
 
         self.db_name = "spearframe.db"
-        # self.connection = sqlite3.connect(self.db_name)
 
-        # self.tempid = uuid4()
-        # print("\nConnection opened", self.tempid)
-        # traceback.print_stack(file=sys.stdout, limit=4)
-
-        # self.db_cursor = self.connection.cursor()
         if not self.__frame_table_exists():
             self.__create_frame_table()
 
-        # Create list for keeping up with all previous frames computed
-        self.frames = []
+        # Create a frame for keeping up with all previous frames computed
+        self.summed_frame = None
+
+        # Current Frame
+        self.frame = None
 
         self.x_last_direction = 0
         self.y_last_direction = 0
@@ -128,23 +125,22 @@ class SpearframeRelationship(Relationship):
         with con:
             cur = con.cursor()
             cur.execute("CREATE TABLE relationships ("
-                        + "relationship_uuid TEXT, association REAL,"
+                        + "relationship_uuid TEXT, correlation REAL,"
                         + " start_time INTEGER, end_time INTEGER)")
         con.close()
 
-    def __insert_frames_to_db(self):
-        db_rows = []
-        for frame in self.frames:
-            db_rows.append((str(self.uuid), frame.get_final_correlation(),
-                            frame.get_start_time(),
-                            frame.get_start_time() + frame.get_total_time()))
+    def __insert_frame_to_db(self):
+        frame_duration = self.frame.get_start_time() + \
+                         self.frame.get_total_time()
         con = sqlite3.connect(self.db_name)
         with con:
             cur = con.cursor()
-            cur.executemany("INSERT INTO relationships VALUES (?,?,?,?)",
-                            db_rows)
+            cur.execute("INSERT INTO relationships VALUES (?,?,?,?)",
+                        (str(self.uuid),
+                         self.frame.get_final_correlation(),
+                         self.frame.get_start_time(),
+                         frame_duration))
         con.close()
-        self.frames = []
 
     def __get_total_frames(self):
         con = sqlite3.connect(self.db_name)
@@ -181,11 +177,19 @@ class SpearframeRelationship(Relationship):
         if self.__should_generate_new_frame(
                 self.current_iteration[self.sensor_x.get_uuid()],
                 self.current_iteration[self.sensor_y.get_uuid()]):
-            self.frames.append(self.__generate_frame_from_values(
+            self.frame = self.__generate_frame_from_values(
                 self.current_iteration[self.sensor_x.get_uuid()],
-                self.current_iteration[self.sensor_y.get_uuid()]))
-            self._push_to_subscribers(generate_association(self.frames))
-            self.__insert_frames_to_db()
+                self.current_iteration[self.sensor_y.get_uuid()])
+            if self.summed_frame is None:
+                association = generate_association([self.frame])
+                self.summed_frame = self.frame
+            else:
+                association = generate_association(
+                                [self.summed_frame, self.frame])
+                self.summed_frame.final_correlation = association
+                self.summed_frame.total_time += self.frame.get_total_time()
+            self._push_to_subscribers(association)
+            self.__insert_frame_to_db()
 
     def get_correlation_coefficient(self):
         if self.get_last_pushed_value() is None:
