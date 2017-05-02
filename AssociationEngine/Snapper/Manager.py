@@ -98,3 +98,6 @@ class Manager:
 
     def get_relationship_from_sensors(self, sensor1, sensor2):
         return self.matrix.get_relationship_from_sensors(sensor1, sensor2)
+
+    def get_all_relationships(self):
+        return self.matrix.relationships

@@ -1,0 +1,12 @@
+<md-list flex>
+    <md-subheader class="md-no-sticky">Current Sensors</md-subheader>
+    <md-list-item class="md-2-line" ng-repeat="node in sensorListing.nodes" ng-click="null">
+        <div class="md-list-item-text" layout="row">
+            <div ng-style="{'background-color': node.renderData.color}" style="border-radius: 50%; width: 40px; height: 40px;"></div>
+            <div flex-offset="5" layout="column">
+                <h3>{{ node.renderData.name }}</h3>
+                <p>{{ node.renderData.description }}</p>
+            </div>
+        </div>
+    </md-list-item>
+</md-list>
