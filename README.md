@@ -6,18 +6,20 @@ Engine for generating network maps that displays which sensors are related to ot
 
 **Written for Python 3.6 or later**
 
-## Installing
-### Docker
+## Running Example Server in Docker
 
-To run in Docker without building the Docker image from source:
+This example comes with a compressed version of NOAA weather data for Birmingham (AL), Columbus (MS), Biloxi (MS), and Las Vegas (NV). The Docker image will immediately launch a server on 5000 which runs the Association Engine on a sped-up simulation of the data.
 ```bash
 docker run -p 5000:5000 -it jacobamason/association-engine
 ```
 
-To build the Docker image from source:
+## Installing
+To get Association Engine as a Python package:
 ```bash
-docker build -t <your-dockerhub-id>/association-engine .
+pip install association-engine
 ```
+
+You can then `import AssociationEngine` and use `AssociationEngine.Manager` and `AssociationEngine.Sensor` for whatever you need.
 
 ## Developer Setup
 
@@ -31,14 +33,3 @@ After everything has been installed, try running tests to make sure everything i
 ```bash
 pytest
 ```
-
-### Running Example Demo
-
-```bash
-cd AssociationEngine/Examples/webpage # After cloning and navigating inside of root
-npm install
-gulp build
-python Server.py
-```
-
-If everything goes smoothly, you should be able to open up localhost:5000 in your favorite web browser.
