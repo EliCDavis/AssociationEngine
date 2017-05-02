@@ -16,13 +16,17 @@ current_sensors = []
 sensors = []
 sensor_pairs = []
 AEManager = Manager()
-AEManager.set_window_size(100)
+AEManager.set_window_size(10)
 app = Flask(__name__, static_folder='dist', static_url_path='')
 app.debug = True
 io = SocketIO(app, logger=True, debug=True)
 ticker = None
 subscribers = []
 
+
+@io.on('pinggg')
+def handle_message(message):
+    print('RECIEVED PING: ' + message)
 
 def subscribe_sensors():
     if subscribers == []:
@@ -71,7 +75,6 @@ def fucked_up():
 def client_connected():
     print("New Connection")
     send_sensors(new_connection=True)
-
     unfreeze_dictionary(AEManager.get_value_matrix())
 
 
@@ -105,8 +108,8 @@ def tick_loop():
     while i < len(sensor_data):
         while simtimestamp > sensor_data[i][0]:
             timestamp, sensorIndex, value = sensor_data[i]
-            print("Publishing", value, "on sensor", sensorIndex, "at time",
-                  timestamp)
+            #print("Publishing", value, "on sensor", sensorIndex, "at time",
+             #     timestamp)
             AEManager.sensors[sensorIndex].publish(
                 value, timestamp=timestamp.timestamp()
             )
@@ -117,15 +120,16 @@ def tick_loop():
 
         simtimestamp += datetime.timedelta(hours=1)
         print("stepping to:", simtimestamp)
-        sleep(1)
+        io.emit('update relationship', 'balls')
+        sleep(.5)
 
     print("Simulation Complete")
 
 
 def unfreeze_dictionary(dictionary):
     for val1, val2 in dictionary:
-        unfrozen_dictionary = {"sensor_x": str(val1),
-                               "sensor_y": str(val2),
+        unfrozen_dictionary = {"sensor_x": str(AEManager.reverse_route_map[str(val1)]),
+                               "sensor_y": str(AEManager.reverse_route_map[str(val2)]),
                                "value": dictionary[frozenset((val1, val2))]}
         io.emit("update relationship", unfrozen_dictionary)
 

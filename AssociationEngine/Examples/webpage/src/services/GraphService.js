@@ -10,24 +10,18 @@ function GraphService(SocketConnectionService) {
 
     var self = this;
 
-    // Publically exposed function
-    self.exampleCall = function() {
-        console.log('Example Service has been Called!');
-    }
-
     self.Nodes$ = new Rx.ReplaySubject();
 
     self.RelationValue$ = new Rx.ReplaySubject();
 
     SocketConnectionService.server$[SocketMessageType.SensorAdded]
         .scan(function(allNodes, newNode) {
-            for(var i=0; i<allNodes.length; i++){
-                console.log(allNodes[i], newNode)
-                if (allNodes[i].renderData.id === newNode){
+
+            for (var i = 0; i < allNodes.length; i++) {
+                if (allNodes[i].renderData.id === newNode) {
                     return allNodes;
                 }
             }
-            console.log(newNode);
 
             allNodes.push({
                 renderData: {
@@ -45,7 +39,26 @@ function GraphService(SocketConnectionService) {
 
     SocketConnectionService.server$[SocketMessageType.UpdateRelationship]
         .scan(function(relationships, rel) {
-            relationships.push(rel)
+            console.log("new relationship: ", rel);
+
+            var updated = false;
+
+            for (var relIndex = 0; relIndex < relationships.length; relIndex++) {
+                var curRel = relationships[relIndex];
+                if (curRel.ids[0] === rel.sensor_x && curRel.ids[1] === rel.sensor_y) {
+                    updated = true;
+                    curRel.value = rel.value;
+                }
+            }
+
+            if (updated === false) {
+                relationships.push({
+                    ids: [rel.sensor_x, rel.sensor_y],
+                    value: rel.value
+                });
+            }
+
+            return relationships;
         }, [])
         .startWith([])
         .subscribe(self.RelationValue$);

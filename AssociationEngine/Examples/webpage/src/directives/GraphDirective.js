@@ -14,7 +14,7 @@ function GraphDirective() {
             var graph = new NodeView(canvas);
 
             graph.setOption('applyGravity', false);
-            graph.setOption('centerOnNodes', false);
+            //graph.setOption('centerOnNodes', false);
 
             // Render most recent data.
             GraphService.Nodes$.combineLatest(GraphService.RelationValue$).subscribe(function(data) {
@@ -28,13 +28,15 @@ function GraphDirective() {
                 data[0].forEach(function(nodeRenderData) {
                     nodesRendered[nodeRenderData.renderData.id] = graph.createNode(nodeRenderData);
                 });
-                console.log(data);
+                console.log(nodesRendered, data[1]);
                 // Add connections between them
-                data[1].forEach(function(line) {
-                    graph.linkNodes(nodesRendered[line.ids[0]], nodesRendered[line.ids[1]], {
-                        relationship: line.value
+                if (data[1].length > 4) {
+                    data[1].forEach(function(line) {
+                        graph.linkNodes(nodesRendered[line.ids[0]], nodesRendered[line.ids[1]], {
+                            relationship: line.value
+                        });
                     });
-                });
+                }
 
             });
 
