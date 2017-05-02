@@ -17,7 +17,7 @@ def test_should_show_perfect_association():
         var1.on_data(math.sin(math.radians(degree * 10)), degree, degree+1)
         var2.on_data(math.sin(math.radians(degree * 10)), degree, degree+1)
 
-    assert rel.get_last_pushed_value() == 1
+    assert rel.get_correlation_coefficient() == 1
 
 
 def test_should_show_strong_association():
