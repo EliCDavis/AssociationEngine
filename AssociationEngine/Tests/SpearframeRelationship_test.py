@@ -1,5 +1,6 @@
 import math
 import os
+import pytest
 
 from AssociationEngine.Relationship.Variable import Variable
 from AssociationEngine.Relationship.SpearframeRelationship import \
@@ -142,3 +143,12 @@ def test_should_return_float_from_frame_db():
         var2.on_data(math.cos(math.radians(degree * 10)), degree, degree+1)
 
     assert isinstance(rel.get_value_between_times(0, 90), float)
+
+
+def test_should_raise_error_when_unknown_publisher_emits():
+    var1 = Variable()
+    var2 = Variable()
+    rel = SpearframeRelationship(var1, var2)
+    with pytest.raises(ValueError):
+        rel.on_new_value(1, 4, 0, 1)
+
