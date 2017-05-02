@@ -36,7 +36,7 @@ class Relationship:
     def get_uuid(self):
         return self.uuid
 
-    def on_new_value(self, value, id_of_var):
+    def on_new_value(self, value, id_of_var, start_time, end_time):
         raise NotImplementedError("Underlying algorithm should implement this")
 
     def get_correlation_coefficient(self):
