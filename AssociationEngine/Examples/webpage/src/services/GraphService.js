@@ -17,18 +17,23 @@ function GraphService(SocketConnectionService) {
     SocketConnectionService.server$[SocketMessageType.SensorAdded]
         .scan(function(allNodes, newNode) {
 
+            console.log(newNode);
+
             for (var i = 0; i < allNodes.length; i++) {
                 if (allNodes[i].renderData.id === newNode) {
                     return allNodes;
                 }
             }
 
+            var name = newNode.name.split(":")[0]
+            var description = newNode.name.split(":")[1]
+
             allNodes.push({
                 renderData: {
-                    id: newNode,
+                    id: newNode.uuid,
                     color: "#" + parseInt(Math.random() * 16777214).toString(16),
-                    description: 'hey',
-                    name: 'whyd i do a name'
+                    description: description,
+                    name: name
                 }
             });
 

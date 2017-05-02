@@ -12,9 +12,6 @@ from AssociationEngine.Examples.webpage.Subscriber import \
 from AssociationEngine.Sensor.Sensor import Sensor
 from AssociationEngine.Snapper.Manager import Manager
 
-current_sensors = []
-sensors = []
-sensor_pairs = []
 AEManager = Manager()
 AEManager.set_window_size(10000)
 app = Flask(__name__, static_folder='dist', static_url_path='')
@@ -64,13 +61,9 @@ def client_connected():
     global ticker
 
     if ticker is None:
-        # ticker = Thread(target=tick_loop)
-        # ticker.daemon = True
-        # ticker.start()
         ticker = io.start_background_task(target=tick_loop)
         io.sleep(2)
-    send_sensors(new_connection=True)
-    subscribe_sensors()
+    send_sensors()
     unfreeze_dictionary(AEManager.get_value_matrix())
 
 
@@ -79,12 +72,12 @@ def client_disconnected():
     print("Client Disconnected")
 
 
-def send_sensors(new_connection=False):
-    global current_sensors
-    for uuid in map(lambda sensor: sensor.uuid, AEManager.sensors):
-        if uuid not in current_sensors or new_connection:
-            io.emit("sensor added", str(uuid), broadcast=True)
-    current_sensors = list(map(lambda sensor: sensor.uuid, AEManager.sensors))
+def send_sensors():
+    for sensor in AEManager.sensors:
+        io.emit("sensor added", {
+            "uuid": str(sensor.uuid),
+            "name": str(sensor)
+        }, broadcast=True)
 
 
 def tick_loop():
@@ -92,6 +85,8 @@ def tick_loop():
 
     for sensor_name in sensors:
         AEManager.add_sensor(Sensor(name=sensor_name))
+
+    subscribe_sensors()
 
     simtimestamp = sensor_data[0][0]
     lastTimestamp = sensor_data[-1][0]
