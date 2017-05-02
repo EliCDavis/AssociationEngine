@@ -1,21 +1,24 @@
+import datetime
 import json
 from threading import Thread
-from time import sleep, time
+from time import sleep
 
 from flask import Flask, send_file
 from flask_socketio import SocketIO
 
-
+from AssociationEngine.Examples.webpage.ReadFromCSV import formatted_csv_reader
+from AssociationEngine.Examples.webpage.Subscriber import \
+    RelationshipSubscriber
 from AssociationEngine.Sensor.Sensor import Sensor
 from AssociationEngine.Snapper.Manager import Manager
-from AssociationEngine.Examples.webpage.Subscriber import RelationshipSubscriber
-from AssociationEngine.Examples.webpage.ReadFromCSV import formatted_csv_reader
 
 current_sensors = []
 sensors = []
 sensor_pairs = []
 AEManager = Manager()
+AEManager.set_window_size(60000)
 app = Flask(__name__, static_folder='dist', static_url_path='')
+app.debug = True
 io = SocketIO(app, logger=True, debug=True)
 ticker = None
 subscribers = []
@@ -41,6 +44,7 @@ def index():
 
     if ticker is None:
         ticker = Thread(target=tick_loop)
+        ticker.daemon = True
         ticker.start()
         sleep(2)
         subscribe_sensors()
@@ -84,18 +88,36 @@ def send_sensors(new_connection=False):
 
 
 def tick_loop():
-    data = formatted_csv_reader()
-    for x in range(len(data)):
-        sensors.append(Sensor())
-        AEManager.add_sensor(sensors[x])
-    timestamp = 0
-    for i in range(min([len(n) for n in data])):
-        for sensor in range(len(sensors)):
-            sensors[sensor].publish(data=data[sensor][timestamp]['Value'],
-                                    timestamp=float(data[sensor][timestamp]['Time']))
-        timestamp += 1
-        sleep(10)
-    print("Done")
+    numSensors, sensor_data = formatted_csv_reader()
+    print(numSensors)
+
+    for _ in range(numSensors):
+        AEManager.add_sensor(Sensor())
+
+    timestamp = sensor_data[0][0]
+    lastTimestamp = sensor_data[-1][0]
+    print("Starting at timestamp", timestamp)
+    print("Ending at timestamp", lastTimestamp)
+    print("Length of", lastTimestamp-timestamp)
+    print("Starting Simulation")
+
+    i = 0  # I'm indexing sensor_data instead of popping to save the rams
+    while i < len(sensor_data):
+        while timestamp <= sensor_data[i][0]:
+            timestamp, sensorIndex, value = sensor_data[i]
+            print("Publishing", value, "on sensor", sensorIndex, "at time",
+                  timestamp)
+            AEManager.sensors[sensorIndex].publish(
+                value, timestamp=timestamp.timestamp()
+            )
+
+            i += 1
+            if i > len(sensor_data):
+                break
+
+        timestamp += datetime.timedelta(hours=1)
+
+    print("Simulation Complete")
 
 
 def unfreeze_dictionary(dictionary):
@@ -107,5 +129,4 @@ def unfreeze_dictionary(dictionary):
 
 
 if __name__ == '__main__':
-
     io.run(app)

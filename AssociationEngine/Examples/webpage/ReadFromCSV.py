@@ -1,20 +1,29 @@
-from datetime import datetime
 import csv
+from datetime import datetime
+from itertools import zip_longest
+
 
 def formatted_csv_reader():
-    epoch = datetime.utcfromtimestamp(0)
-    with open('processed_noaa_weather_data.csv') as csvfile:
+    with open('processed_noaa_weather_data.csv', newline='') as csvfile:
         reader = csv.reader(csvfile)
-        grouped_data = []
-        row_count = 0
-        for row in reader:
-            item = 0
-            grouped_data.append([])
-            while item < len(row):
-                grouped_data[row_count].append({"Time": str((datetime.strptime(row[item], '%Y-%m-%d %H:%M:%S')-epoch).total_seconds()), "Value": row[item+1]})
-                item += 2
-            row_count += 1
+        data_sorted_by_date = []
+        sensors = 0
+        for i, row in enumerate(reader):
+            sensors += 1
+            for timestamp, value in grouper(row, 2):
+                timestamp = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+                value = int(value)
+                data_sorted_by_date.append((timestamp, i, value))
+    data_sorted_by_date.sort()
+    return sensors, data_sorted_by_date
 
-    return grouped_data
 
-formatted_csv_reader()
+def grouper(iterable, n, fillvalue=None):
+    "Collect data into fixed-length chunks or blocks"
+    # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
+    args = [iter(iterable)] * n
+    return zip_longest(*args, fillvalue=fillvalue)
+
+
+if __name__ == '__main__':
+    print(formatted_csv_reader())
