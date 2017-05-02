@@ -205,7 +205,6 @@ class SpearframeRelationship(Relationship):
             self.x_last_direction = 0
             self.y_last_direction = 0
 
-
     def get_correlation_coefficient(self):
         if self.get_last_pushed_value() is None:
             return 0.0
