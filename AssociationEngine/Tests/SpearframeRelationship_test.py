@@ -163,10 +163,13 @@ def test_should_cause_frame_skip():
     for degree in range(20):
         if degree > 15 and rel.current_iteration[rel.sensor_x.get_uuid()]:
             var1.on_data(None, degree, degree+1)
-            var2.on_data(math.cos(math.radians(degree * 10)), degree, degree + 1)
+            var2.on_data(math.cos(math.radians(degree * 10)),
+                         degree, degree + 1)
             break
         else:
-            var1.on_data(math.sin(math.radians(degree * 10)), degree, degree + 1)
-            var2.on_data(math.cos(math.radians(degree * 10)), degree, degree + 1)
+            var1.on_data(math.sin(math.radians(degree * 10)),
+                         degree, degree + 1)
+            var2.on_data(math.cos(math.radians(degree * 10)),
+                         degree, degree + 1)
 
     assert not rel.current_iteration[rel.sensor_x.get_uuid()]
