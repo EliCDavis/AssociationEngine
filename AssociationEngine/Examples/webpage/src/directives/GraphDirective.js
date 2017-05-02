@@ -35,7 +35,8 @@ function GraphDirective() {
                     data[1].forEach(function(line) {
 
                         if (!nodesRendered[line.ids[0]] || !nodesRendered[line.ids[1]]) {
-                            return;
+                            console.log("error: ", line, nodesRendered);
+                            //return;
                         }
 
 

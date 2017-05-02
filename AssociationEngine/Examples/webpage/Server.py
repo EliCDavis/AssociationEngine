@@ -16,7 +16,7 @@ current_sensors = []
 sensors = []
 sensor_pairs = []
 AEManager = Manager()
-AEManager.set_window_size(10)
+AEManager.set_window_size(100)
 app = Flask(__name__, static_folder='dist', static_url_path='')
 app.debug = True
 io = SocketIO(app, logger=True, debug=True, async_mode="eventlet")
@@ -27,7 +27,7 @@ subscribers = []
 @io.on('pinggg')
 def handle_message(message):
     print('RECIEVED PING: ' + message)
-    unfreeze_dictionary(AEManager.get_value_matrix())
+    #unfreeze_dictionary(AEManager.get_value_matrix())
 
 def subscribe_sensors():
     if subscribers == []:
@@ -76,7 +76,7 @@ def client_connected():
         io.sleep(2)
     send_sensors(new_connection=True)
     subscribe_sensors()
-    #unfreeze_dictionary(AEManager.get_value_matrix())
+    unfreeze_dictionary(AEManager.get_value_matrix())
 
 
 @io.on("disconnect")
