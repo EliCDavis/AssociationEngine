@@ -7,13 +7,17 @@ class Frame:
     Can be used as a way to view the history of a trend.
     """
 
-    def __init__(self):
+    def __init__(self, start_time):
 
         self.times = []
         self.correlations = []
 
+        self.start_time = start_time
         self.total_time = 0.0
         self.final_correlation = None
+
+    def get_start_time(self):
+        return self.start_time
 
     def get_total_time(self):
         """

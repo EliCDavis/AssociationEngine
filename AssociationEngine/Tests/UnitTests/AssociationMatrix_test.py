@@ -65,7 +65,7 @@ def test_should_return_whole_dict():
     key1 = frozenset((Rxy.sensor_x.get_uuid(), Rxy.sensor_y.get_uuid()))
     key2 = frozenset((Rwz.sensor_x.get_uuid(), Rwz.sensor_y.get_uuid()))
     a = Am.get_value_matrix()
-    assert a == {key1: None, key2: None}
+    assert a == {key1: 0.0, key2: 0.0}
 
 
 def test_should_return_values_in_range(rel_25, rel_50, rel_75):
