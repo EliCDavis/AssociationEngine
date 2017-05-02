@@ -16,7 +16,7 @@ current_sensors = []
 sensors = []
 sensor_pairs = []
 AEManager = Manager()
-AEManager.set_window_size(3600000)
+AEManager.set_window_size(100)
 app = Flask(__name__, static_folder='dist', static_url_path='')
 app.debug = True
 io = SocketIO(app, logger=True, debug=True)
@@ -27,6 +27,7 @@ subscribers = []
 def subscribe_sensors():
     if subscribers == []:
         relationships = AEManager.get_all_relationships()
+        print(relationships)
         for sensor_x, sensor_y in relationships:
             subscriber = RelationshipSubscriber(sensor_x,
                                                 sensor_y,
@@ -93,16 +94,16 @@ def tick_loop():
     for sensor_name in sensors:
         AEManager.add_sensor(Sensor(name=sensor_name))
 
-    timestamp = sensor_data[0][0]
+    simtimestamp = sensor_data[0][0]
     lastTimestamp = sensor_data[-1][0]
-    print("Starting at timestamp", timestamp)
+    print("Starting at timestamp", simtimestamp)
     print("Ending at timestamp", lastTimestamp)
-    print("Length of", lastTimestamp-timestamp)
+    print("Length of", lastTimestamp-simtimestamp)
     print("Starting Simulation")
 
     i = 0  # I'm indexing sensor_data instead of popping to save the rams
     while i < len(sensor_data):
-        while timestamp <= sensor_data[i][0]:
+        while simtimestamp > sensor_data[i][0]:
             timestamp, sensorIndex, value = sensor_data[i]
             print("Publishing", value, "on sensor", sensorIndex, "at time",
                   timestamp)
@@ -111,10 +112,12 @@ def tick_loop():
             )
 
             i += 1
-            if i > len(sensor_data):
+            if i >= len(sensor_data):
                 break
 
-        timestamp += datetime.timedelta(hours=1)
+        simtimestamp += datetime.timedelta(hours=1)
+        print("stepping to:", simtimestamp)
+        sleep(1)
 
     print("Simulation Complete")
 
