@@ -1,5 +1,6 @@
 *.db
 *.csv
+.coverage
 
 # Compiled source #
 ###################
