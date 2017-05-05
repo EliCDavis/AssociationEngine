@@ -6,7 +6,7 @@ README = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'README.md')
 
 setup(
     name="association_engine",
-    version="0.1.2",
+    version="0.1.3",
     packages=find_packages(),
     author="Senior Design Team MSU",
     author_email="ecd157@msstate.edu",

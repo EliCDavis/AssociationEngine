@@ -43,14 +43,17 @@ def main():
 
         for station_name in station_data:
             for i in range(1, len(FIELDS) + 1):
-                writer.writerow(list(itertools.chain(
-                    *map(lambda pair: (pair[0], int(pair[1])),
-                         filter(lambda pair: pair[1].isdigit(),
-                                map(itemgetter(0, i),
-                                    station_data[station_name])
-                                )
-                         )
-                )))
+                writer.writerow(
+                    ["%s: %s" % (station_name, FIELDS[i-1])]
+                    +
+                    list(itertools.chain(
+                        *map(lambda pair: (pair[0], int(pair[1])),
+                             filter(lambda pair: pair[1].isdigit(),
+                                    map(itemgetter(0, i),
+                                        station_data[station_name])
+                                    )
+                             )
+                    )))
 
 
 if __name__ == '__main__':

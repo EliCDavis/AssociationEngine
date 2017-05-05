@@ -12,14 +12,11 @@ from AssociationEngine.Examples.webpage.Subscriber import \
 from AssociationEngine.Sensor.Sensor import Sensor
 from AssociationEngine.Snapper.Manager import Manager
 
-current_sensors = []
-sensors = []
-sensor_pairs = []
 AEManager = Manager()
-AEManager.set_window_size(60000)
+AEManager.set_window_size(20000)
 app = Flask(__name__, static_folder='dist', static_url_path='')
 app.debug = True
-io = SocketIO(app, logger=True, debug=True)
+io = SocketIO(app, logger=True, debug=True, async_mode="eventlet")
 ticker = None
 subscribers = []
 
@@ -27,9 +24,10 @@ subscribers = []
 def subscribe_sensors():
     if subscribers == []:
         relationships = AEManager.get_all_relationships()
+        print(relationships)
         for sensor_x, sensor_y in relationships:
-            subscriber = RelationshipSubscriber(sensor_x,
-                                                sensor_y,
+            subscriber = RelationshipSubscriber(str(AEManager.reverse_route_map[str(sensor_x)]),
+                                                str(AEManager.reverse_route_map[str(sensor_y)]),
                                                 lambda x: io.emit('update relationship',
                                                                   x,
                                                                   broadcast=True))
@@ -37,22 +35,13 @@ def subscribe_sensors():
             relationships[frozenset((sensor_x, sensor_y))].subscribe(subscriber)
 
 
-
 @app.route("/")
 def index():
-    global ticker
-
-    if ticker is None:
-        ticker = Thread(target=tick_loop)
-        ticker.daemon = True
-        ticker.start()
-        sleep(2)
-        subscribe_sensors()
     return app.send_static_file('index.html')
 
 
 @app.route("/python/socket.io.js")
-def socketio():
+def get_socketio_js():
     return send_file("python_static/socket.io.1.7.3.min.js")
 
 
@@ -69,8 +58,12 @@ def fucked_up():
 @io.on("connect")
 def client_connected():
     print("New Connection")
-    send_sensors(new_connection=True)
+    global ticker
 
+    if ticker is None:
+        ticker = io.start_background_task(target=tick_loop)
+        io.sleep(2)
+    send_sensors()
     unfreeze_dictionary(AEManager.get_value_matrix())
 
 
@@ -79,54 +72,57 @@ def client_disconnected():
     print("Client Disconnected")
 
 
-def send_sensors(new_connection=False):
-    global current_sensors
-    for uuid in map(lambda sensor: sensor.uuid, AEManager.sensors):
-        if uuid not in current_sensors or new_connection:
-            io.emit("sensor added", json.dumps(str(uuid)), broadcast=True)
-    current_sensors = list(map(lambda sensor: sensor.uuid, AEManager.sensors))
+def send_sensors():
+    for sensor in AEManager.sensors:
+        io.emit("sensor added", {
+            "uuid": str(sensor.uuid),
+            "name": str(sensor)
+        }, broadcast=True)
 
 
 def tick_loop():
-    numSensors, sensor_data = formatted_csv_reader()
-    print(numSensors)
+    sensors, sensor_data = formatted_csv_reader()
 
-    for _ in range(numSensors):
-        AEManager.add_sensor(Sensor())
+    for sensor_name in sensors:
+        AEManager.add_sensor(Sensor(name=sensor_name))
 
-    timestamp = sensor_data[0][0]
+    subscribe_sensors()
+
+    simtimestamp = sensor_data[0][0]
     lastTimestamp = sensor_data[-1][0]
-    print("Starting at timestamp", timestamp)
+    print("Starting at timestamp", simtimestamp)
     print("Ending at timestamp", lastTimestamp)
-    print("Length of", lastTimestamp-timestamp)
+    print("Length of", lastTimestamp-simtimestamp)
     print("Starting Simulation")
 
     i = 0  # I'm indexing sensor_data instead of popping to save the rams
     while i < len(sensor_data):
-        while timestamp <= sensor_data[i][0]:
+        while simtimestamp > sensor_data[i][0]:
             timestamp, sensorIndex, value = sensor_data[i]
-            print("Publishing", value, "on sensor", sensorIndex, "at time",
-                  timestamp)
+            #print("Publishing", value, "on sensor", sensorIndex, "at time",
+             #     timestamp)
             AEManager.sensors[sensorIndex].publish(
                 value, timestamp=timestamp.timestamp()
             )
 
             i += 1
-            if i > len(sensor_data):
+            if i >= len(sensor_data):
                 break
 
-        timestamp += datetime.timedelta(hours=1)
+        simtimestamp += datetime.timedelta(hours=1)
+        print("stepping to:", simtimestamp)
+        io.sleep(.5)
 
     print("Simulation Complete")
 
 
 def unfreeze_dictionary(dictionary):
     for val1, val2 in dictionary:
-        unfrozen_dictionary = {"sensor_x": str(val1),
-                               "sensor_y": str(val2),
+        unfrozen_dictionary = {"sensor_x": str(AEManager.reverse_route_map[str(val1)]),
+                               "sensor_y": str(AEManager.reverse_route_map[str(val2)]),
                                "value": dictionary[frozenset((val1, val2))]}
         io.emit("update relationship", unfrozen_dictionary)
 
 
 if __name__ == '__main__':
-    io.run(app)
+    io.run(app, host="0.0.0.0")

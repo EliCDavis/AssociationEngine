@@ -1,7 +1,3 @@
-from AssociationEngine.Relationship.Relationship import Relationship
-
-
-
 class RelationshipSubscriber:
     def __init__(self, sensor_x, sensor_y, cb):
         self.sensor_x = sensor_x

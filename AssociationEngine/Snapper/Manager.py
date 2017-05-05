@@ -11,6 +11,7 @@ class Manager:
     def __init__(self):
         self.sensors = []
         self.route_map = {}
+        self.reverse_route_map = {}
         self.variables = []
         self.snapper = Snapper(self)
         self.matrix = AssociationMatrix()
@@ -35,6 +36,7 @@ class Manager:
 
         self.variables.append(newVariable)
         self.route_map[sensor.uuid] = newVariable
+        self.reverse_route_map[str(newVariable.uuid)] = sensor.uuid
 
     def remove_sensor(self, sensor):
         """
@@ -46,6 +48,7 @@ class Manager:
         """
         variable = self.route_map[sensor.uuid]
         self.route_map.pop(sensor.uuid)
+        self.reverse_route_map.pop(str(variable.uuid))
 
         for var in self.variables:
             if var == variable:

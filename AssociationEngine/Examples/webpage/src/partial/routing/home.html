@@ -1,4 +1,15 @@
 <div layout="row" flex layout-margin>
-    <cs-sensor-listing layout="column" layout-md="50" layout-gt-md="20"></cs-sensor-listing>
+    <div layout="column">
+        <md-input-container>
+            <label>Cut off</label>
+            <md-select ng-model="selectedItem" md-selected-text="getSelectedText()">
+                <md-optgroup label="items">
+                    <md-option ng-value="item" ng-repeat="item in items">Hiding {{item}}</md-option>
+                </md-optgroup>
+            </md-select>
+        </md-input-container>
+
+        <cs-sensor-listing flex layout="column"></cs-sensor-listing>
+    </div>
     <cs-graph layout="column" md-whiteframe="8" flex></cs-graph>
 </div>
