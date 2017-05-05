@@ -38,7 +38,6 @@ class Manager:
         self.route_map[sensor.uuid] = newVariable
         self.reverse_route_map[str(newVariable.uuid)] = sensor.uuid
 
-
     def remove_sensor(self, sensor):
         """
         This function removes a new sensor to the snapper module, removes
