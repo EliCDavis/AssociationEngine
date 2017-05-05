@@ -2,7 +2,7 @@
 
 # Association Engine
 
-Engine for generating network maps that displays which sensors are related to others in an IOT setting as a feature for cloud computing.
+The main objective of the project is to establish a means of automatically detecting and reporting associations between streams of data from a wide assortment of sensors. Our system will monitor the sensor data constantly in the background, maintaining an assessment of the relationships between each pair of sensors.
 
 **Written for Python 3.6 or later**
 
@@ -20,6 +20,33 @@ pip install association-engine
 ```
 
 You can then `import AssociationEngine` and use `AssociationEngine.Manager` and `AssociationEngine.Sensor` for whatever you need.
+
+### Example
+```python
+import AssociationEngine
+
+class MyCustomSensor(AssociationEngine.Sensor):
+
+    def some_function(self):
+        self.publish(some_data, some_time)
+
+
+class MySubscriber:
+
+    def on_data(self, value):
+        print("The association value is: " + str(value)):
+
+
+AE = AssociationEngine.Manager()
+sensor_one = MyCustomSensor()
+sensor_two = MyCustomSensor()
+
+AE.add_sensor(sensor_one)
+AE.add_sensor(sensor_two)
+
+relationship = AE.get_relationship_from_sensors(sensor_one, sensor_two)
+relationship.subscribe(MySubscriber())
+```
 
 ## Developer Setup
 
