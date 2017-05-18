@@ -26,4 +26,4 @@ def grouper(iterable, n, fillvalue=None):
 
 
 if __name__ == '__main__':
-    print((formatted_csv_reader()[0]))
+    print(formatted_csv_reader()[0])

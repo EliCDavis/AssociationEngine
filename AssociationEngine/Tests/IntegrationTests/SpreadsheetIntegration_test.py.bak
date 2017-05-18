@@ -35,7 +35,7 @@ if __name__ == '__main__':
     manager, sensors_data = get_manager_and_sensor_data_from_cvs("test.csv")
     while True:
         try:
-            print((manager.get_value_matrix()))
+            print(manager.get_value_matrix())
             publish_all_sensors(manager, sensors_data)
         except IndexError:
             break

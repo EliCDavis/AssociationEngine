@@ -77,7 +77,7 @@ def test_should_return_values_in_range(rel_25, rel_50, rel_75):
     max_val = 0.6
     sensor_pairs_in_range = \
         association_matrix.get_relationships_by_value_range(min_val, max_val)
-    for key, value in list(sensor_pairs_in_range.items()):
+    for key, value in sensor_pairs_in_range.items():
         assert min_val <= value <= max_val
 
 

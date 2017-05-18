@@ -26,7 +26,7 @@ def main():
             if station_name not in station_data:
                 station_data[station_name] = []
 
-            data = tuple([row[f] for f in FIELDS])
+            data = tuple(map(lambda f: row[f], FIELDS))
 
             station_data[station_name].append(
                 (datetime.strptime(row["DATE"], "%Y-%m-%d %H:%M"),
@@ -47,8 +47,12 @@ def main():
                     ["%s: %s" % (station_name, FIELDS[i-1])]
                     +
                     list(itertools.chain(
-                        *[(pair[0], int(pair[1])) for pair in [pair for pair in map(itemgetter(0, i),
-                                        station_data[station_name]) if pair[1].isdigit()]]
+                        *map(lambda pair: (pair[0], int(pair[1])),
+                             filter(lambda pair: pair[1].isdigit(),
+                                    map(itemgetter(0, i),
+                                        station_data[station_name])
+                                    )
+                             )
                     )))
 
 
