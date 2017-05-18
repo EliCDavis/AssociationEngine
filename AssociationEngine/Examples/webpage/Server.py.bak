@@ -90,9 +90,9 @@ def tick_loop():
 
     simtimestamp = sensor_data[0][0]
     lastTimestamp = sensor_data[-1][0]
-    print(("Starting at timestamp", simtimestamp))
-    print(("Ending at timestamp", lastTimestamp))
-    print(("Length of", lastTimestamp-simtimestamp))
+    print("Starting at timestamp", simtimestamp)
+    print("Ending at timestamp", lastTimestamp)
+    print("Length of", lastTimestamp-simtimestamp)
     print("Starting Simulation")
 
     i = 0  # I'm indexing sensor_data instead of popping to save the rams
@@ -110,7 +110,7 @@ def tick_loop():
                 break
 
         simtimestamp += datetime.timedelta(hours=1)
-        print(("stepping to:", simtimestamp))
+        print("stepping to:", simtimestamp)
         io.sleep(.5)
 
     print("Simulation Complete")

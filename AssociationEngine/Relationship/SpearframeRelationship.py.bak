@@ -317,8 +317,11 @@ def generate_association(frames):
     """
     gen_assoc = sum(
         list(
-            [x.get_total_time() * abs(x.get_final_correlation()) for x in frames]
+            map(
+                lambda x: x.get_total_time() * abs(x.get_final_correlation()),
+                frames
+            )
         )
-    ) / sum(list([x.get_total_time() for x in frames]))
+    ) / sum(list(map(lambda x: x.get_total_time(), frames)))
 
     return 0 if math.isnan(gen_assoc) else gen_assoc

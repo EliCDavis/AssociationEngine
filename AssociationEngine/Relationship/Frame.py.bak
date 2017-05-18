@@ -57,6 +57,9 @@ class Frame:
         self.total_time = sum(self.times)
         self.final_correlation = sum(
             list(
-                [x[0] * x[1] for x in list(zip(self.times, self.correlations))]
+                map(
+                    lambda x: x[0] * x[1],
+                    list(zip(self.times, self.correlations))
+                )
             )
         ) / self.total_time
